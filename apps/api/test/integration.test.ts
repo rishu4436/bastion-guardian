@@ -383,4 +383,35 @@ describe.skipIf(!pgUrl)("api v1 (LOCAL SIMULATION: anvil + Postgres)", () => {
       expect(Object.keys(spec.paths)).toContain(p);
     expect((await app.inject({ method: "GET", url: "/docs" })).statusCode).toBeLessThan(400);
   });
+  it("Proof of Protection: JSON with a reproducible content hash, and a PDF rendering", async () => {
+    const list = (await app.inject({ method: "GET", url: "/v1/rescues?chainId=31337" })).json();
+    const withExec = list.items.find((i: { executions: { success: boolean }[] }) =>
+      i.executions.some((e) => e.success),
+    );
+    expect(withExec).toBeTruthy();
+    const res = await app.inject({ method: "GET", url: `/v1/rescues/${withExec.rescueId}/proof` });
+    expect(res.statusCode).toBe(200);
+    const proof = res.json();
+    expect(proof.schema).toBe("bastion.proof-of-protection/v1");
+    expect(proof.environment).toBe("LOCAL_SIMULATION");
+    expect(proof.outcome.rescued).toBe(true);
+    expect(proof.facts.debtToken.symbol).toBe("fUSDC");
+    expect(proof.facts.policy.owner).toMatch(/^0x[0-9a-f]{40}$/);
+    const { canonicalJson } = await import("../src/routes/proof.js");
+    const { createHash } = await import("node:crypto");
+    expect(createHash("sha256").update(canonicalJson(proof.facts)).digest("hex")).toBe(
+      proof.verification.contentHash,
+    );
+    // Deterministic: a second fetch hashes the same facts even though generatedAt changes.
+    const again = (await app.inject({ method: "GET", url: `/v1/rescues/${withExec.rescueId}/proof` })).json();
+    expect(again.verification.contentHash).toBe(proof.verification.contentHash);
+    const pdf = await app.inject({ method: "GET", url: `/v1/rescues/${withExec.rescueId}/proof.pdf` });
+    expect(pdf.statusCode).toBe(200);
+    expect(pdf.headers["content-type"]).toBe("application/pdf");
+    expect(pdf.rawPayload.subarray(0, 5).toString()).toBe("%PDF-");
+    expect(pdf.rawPayload.length).toBeGreaterThan(1500);
+    expect(
+      (await app.inject({ method: "GET", url: `/v1/rescues/0x${"cd".repeat(32)}/proof` })).statusCode,
+    ).toBe(404);
+  });
 });

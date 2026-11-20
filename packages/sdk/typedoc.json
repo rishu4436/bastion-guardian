@@ -1,0 +1,14 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts", "src/react/index.ts"],
+  "tsconfig": "tsconfig.bundle.json",
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeExternals": false,
+  "githubPages": false,
+  "hideGenerator": true,
+  "disableSources": true,
+  "name": "@bastion-guardian/sdk"
+}

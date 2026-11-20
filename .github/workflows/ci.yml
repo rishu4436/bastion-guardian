@@ -85,6 +85,18 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Generated API references are up to date
+        run: |
+          pnpm --filter @bastion-guardian/api openapi:check
+          pnpm --filter @bastion-guardian/sdk docs:check
+      - name: Independent SDK example app (installs the packed SDK tarball)
+        working-directory: examples/sdk-react-example
+        run: |
+          npm ci --no-audit --no-fund
+          npm run sdk:local
+          npm run smoke
+          npm run typecheck
+          npm run build
       - name: Install Playwright Chromium
         working-directory: apps/web
         run: pnpm exec playwright install --with-deps chromium

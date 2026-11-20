@@ -4,3 +4,6 @@ contracts/
 pnpm-lock.yaml
 evidence/
 packages/simulator/test/fixtures/foundry-vectors.json
+docs/api/
+packages/sdk/docs/
+**/package-lock.json
