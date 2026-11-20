@@ -75,15 +75,13 @@ describe.skipIf(!pgUrl || !redisOk)(
         { userId: userB, kind: "sms", destination: "+919800000000", status: "active", verifiedAt: v },
       ]);
       const sub = await fakeSubscription(`${fx.url}/push/a1`);
-      await db
-        .insert(deviceSubscriptions)
-        .values({
-          userId: userA,
-          kind: "webpush",
-          endpoint: sub.endpoint,
-          p256dh: sub.keys.p256dh,
-          auth: sub.keys.auth,
-        });
+      await db.insert(deviceSubscriptions).values({
+        userId: userA,
+        kind: "webpush",
+        endpoint: sub.endpoint,
+        p256dh: sub.keys.p256dh,
+        auth: sub.keys.auth,
+      });
       // B only wants critical alerts.
       await db.insert(notificationPreferences).values({ userId: userB, minSeverity: "critical" });
       d = new NotificationDispatcher(
