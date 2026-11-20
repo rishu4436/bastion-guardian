@@ -34,6 +34,9 @@ jobs:
         run: forge test -vv
         env:
           FOUNDRY_PROFILE: ci
+      - name: Simulator vectors are in sync with the contracts
+        working-directory: .
+        run: diff -u packages/simulator/test/fixtures/foundry-vectors.json contracts/out-evidence/vectors/foundry-vectors.json
 
   typescript:
     name: TypeScript (lint, typecheck, test, build)

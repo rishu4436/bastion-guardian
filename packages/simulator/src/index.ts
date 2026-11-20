@@ -105,3 +105,5 @@ export function stressTest(
 ): ShockResult[] {
   return shocks.map((b) => simulateShock(pos, policy, b));
 }
+
+export * from "./scenarios.js";
