@@ -113,7 +113,7 @@ export async function collectEvents(
       chainId: c.reserveChainId,
       policyId: c.policyId,
       owner: c.policyOwner,
-      sourceRefs: { rescueId: c.rescueId, reserveChainId: c.reserveChainId },
+      sourceRefs: { chainId: c.reserveChainId, rescueId: c.rescueId, reserveChainId: c.reserveChainId },
       confirmation: "not_applicable",
       facts: { principal: c.principal, fee: c.fee, lastError: c.lastError },
     });
@@ -136,7 +136,7 @@ export async function collectEvents(
       chainId: inc.chainId ?? chainId,
       policyId: inc.policyId,
       owner: await owner(inc.policyId!),
-      sourceRefs: { incidentId: inc.id },
+      sourceRefs: { chainId: inc.chainId ?? chainId, incidentId: inc.id },
       confirmation: "not_applicable",
       facts: { title: inc.title, action: inc.recommendedAction },
     });
