@@ -28,6 +28,7 @@ pnpm infra:up
 Requirements: Node ≥ 24, pnpm 10, Foundry 1.9.0, Docker (optional).
 
 ## Documentation
+
 - [ARCHITECTURE.md](ARCHITECTURE.md): components, trust boundaries, rescue paths, deployment order
 - [THREAT-MODEL.md](THREAT-MODEL.md): threats, controls, the test for each, open risks
 - [FEATURE-COMPLETENESS.md](FEATURE-COMPLETENESS.md): feature → component → acceptance test → status
@@ -36,13 +37,16 @@ Requirements: Node ≥ 24, pnpm 10, Foundry 1.9.0, Docker (optional).
 - [evidence/security/SLITHER-TRIAGE.md](evidence/security/SLITHER-TRIAGE.md): static analysis results
 
 ## Repository layout
+
 `contracts/` Foundry · `apps/` api, web (mobile and docs reserved) · `packages/` types, chain-registry, config,
 risk-engine, simulator, sdk, observability, ui · `services/` (reserved, Phase 4+) · `infrastructure/` docker ·
 `evidence/` real artifacts only · `docs/`.
 
 ## Fixtures
+
 `contracts/src/fixtures/*` is a **test fixture lending market, oracle and swap venue. It is not Aave or Uniswap**. It
 exists for deterministic demos. The Aave adapter is exercised against the real Aave V3 Base Sepolia contracts in fork tests.
 
 ## License
+
 MIT
