@@ -1,0 +1,40 @@
+{
+  "name": "@bastion-guardian/notification-dispatcher",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turns verified chain events and incidents into per-user notifications (BullMQ) through Web Push, Telegram, email and SMS provider adapters.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bastion-guardian/db": "workspace:*",
+    "@bastion-guardian/service-kit": "workspace:*",
+    "bullmq": "6.7.8",
+    "drizzle-orm": "0.45.4",
+    "ioredis": "6.0.0",
+    "web-push": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7",
+    "@bastion/test-env": "workspace:*"
+  }
+}
