@@ -1,0 +1,39 @@
+{
+  "name": "@bastion-guardian/settlement-reconciler",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reconciles destination solver fills against reserve-chain reimbursements: overdue, amount mismatches, recovery retries and missing acknowledgments.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bastion-guardian/contracts": "workspace:*",
+    "@bastion-guardian/db": "workspace:*",
+    "@bastion-guardian/service-kit": "workspace:*",
+    "drizzle-orm": "0.45.4",
+    "viem": "2.40.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7",
+    "@bastion/test-env": "workspace:*"
+  }
+}
