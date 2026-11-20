@@ -8,7 +8,15 @@ import { parseSiweMessage, verifySiweMessage } from "viem/siwe";
 import { authNonces, sessions } from "@bastion-guardian/db";
 import { ALLOWED_CHAINS } from "@bastion-guardian/service-kit";
 import { HttpError, needDb, sha256, type ApiContext } from "../context.js";
-import { SESSION_COOKIE, audit, createSession, requireAuth, rolesFor, setSessionCookie } from "../auth.js";
+import {
+  SESSION_COOKIE,
+  audit,
+  createSession,
+  requireAuth,
+  requireJsonSameOrigin,
+  rolesFor,
+  setSessionCookie,
+} from "../auth.js";
 
 const NONCE_TTL_MS = 5 * 60_000;
 const MAX_CLOCK_SKEW_MS = 5 * 60_000;
@@ -149,14 +157,17 @@ export const authRoutes: FastifyPluginAsync<{ ctx: ApiContext }> = async (app, {
     },
   );
 
-  // GET so a page reload can recover a token; CORS (credentials only for API_PUBLIC_ORIGIN) keeps it same-origin.
-  r.get(
+  // R-11: POST, so a token is only minted by a request a cross-site page cannot forge. Browsers cannot send a
+  // cross-origin application/json POST without a CORS preflight (which only API_PUBLIC_ORIGIN passes), and the
+  // session cookie is SameSite=Lax (not attached to cross-site POSTs). A foreign Origin header is also rejected.
+  r.post(
     "/auth/csrf",
     {
-      preHandler: requireAuth(ctx),
+      preValidation: requireJsonSameOrigin(ctx),
       schema: {
         tags: ["auth"],
-        summary: "Rotate the CSRF token for the current session",
+        summary: "Rotate the CSRF token for the current session (JSON body, same-origin only)",
+        body: z.object({}).strict().optional(),
         response: { 200: z.object({ csrfToken: z.string() }) },
       },
     },

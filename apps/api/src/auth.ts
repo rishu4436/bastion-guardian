@@ -167,3 +167,22 @@ export function requireAuth(ctx: ApiContext, ...roles: Role[]) {
       throw new HttpError(403, "FORBIDDEN_ROLE", `Requires role: ${roles.join(" or ")}`);
   };
 }
+
+/**
+ * preHandler for the CSRF-token mint (R-11): requires a session, an application/json content type (forces a CORS
+ * preflight for any cross-origin caller), and, when the browser sends one, an Origin equal to API_PUBLIC_ORIGIN.
+ */
+export function requireJsonSameOrigin(ctx: ApiContext) {
+  return async (req: FastifyRequest) => {
+    if (!req.auth) throw new HttpError(401, "UNAUTHENTICATED", "Sign in with Ethereum first");
+    const ct = String(req.headers["content-type"] ?? "")
+      .split(";")[0]!
+      .trim()
+      .toLowerCase();
+    if (ct !== "application/json")
+      throw new HttpError(415, "JSON_REQUIRED", "POST /v1/auth/csrf requires Content-Type: application/json");
+    const origin = req.headers.origin;
+    if (origin !== undefined && origin !== ctx.env.API_PUBLIC_ORIGIN)
+      throw new HttpError(403, "ORIGIN_NOT_ALLOWED");
+  };
+}
