@@ -22,6 +22,7 @@ import {
   solverLiquidityCommitments,
   solverRegistrations,
   sourceEscrows,
+  tokens,
 } from "@bastion-guardian/db";
 import { Address, Bytes32, ChainIdQ, HttpError, Limit, json, needDb, type ApiContext } from "../context.js";
 
@@ -64,6 +65,24 @@ export const dataRoutes: FastifyPluginAsync<{ ctx: ApiContext }> = async (app, {
       },
     },
     async () => json({ items: await needDb(ctx).select().from(protocols).orderBy(asc(protocols.id)) }),
+  );
+
+  r.get(
+    "/tokens",
+    {
+      schema: {
+        tags: ["markets"],
+        summary: "Token metadata (fixture tokens are flagged is_fixture)",
+        querystring: z.object({ chainId: ChainIdQ.optional() }),
+      },
+    },
+    async (req) =>
+      json({
+        items: await needDb(ctx)
+          .select()
+          .from(tokens)
+          .where(req.query.chainId ? eq(tokens.chainId, req.query.chainId) : undefined),
+      }),
   );
 
   r.get(

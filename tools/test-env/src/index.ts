@@ -21,7 +21,14 @@ export { probePostgres };
 
 export async function createTestEnv(adminUrl: string): Promise<TestEnv> {
   const [stack, t] = await Promise.all([startLocalStack(), createTestDatabase(adminUrl)]);
-  await seedLocalSimulation(t.db, { fixtureMarket: stack.addresses.fixtureMarket });
+  await seedLocalSimulation(t.db, {
+    fixtureMarket: stack.addresses.fixtureMarket,
+    tokens: [
+      { address: stack.addresses.fUSDC, symbol: "fUSDC", decimals: 6 },
+      { address: stack.addresses.fWETH, symbol: "fWETH", decimals: 18 },
+      { address: stack.addresses.frUSDC, symbol: "frUSDC", decimals: 6 },
+    ],
+  });
   const indexer = new ChainIndexer(t.db, stack.public, {
     chainId: 31337,
     contracts: localContracts(stack.addresses),

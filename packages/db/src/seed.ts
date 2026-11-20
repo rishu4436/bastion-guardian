@@ -70,7 +70,12 @@ export const LOCAL_FIXTURE_PROTOCOL_ID = "fixture-local-31337";
  */
 export async function seedLocalSimulation(
   db: Database,
-  opts: { fixtureMarket: string; finalityDepth?: number },
+  opts: {
+    fixtureMarket: string;
+    finalityDepth?: number;
+    /** Fixture tokens deployed by LocalSimulationDeploy (always stored with is_fixture = true). */
+    tokens?: { address: string; symbol: string; decimals: number }[];
+  },
 ): Promise<void> {
   await db
     .insert(chains)
@@ -95,4 +100,17 @@ export async function seedLocalSimulation(
       sourceUrl: null,
     })
     .onConflictDoNothing();
+  if (opts.tokens?.length)
+    await db
+      .insert(tokens)
+      .values(
+        opts.tokens.map((t) => ({
+          chainId: LOCAL_CHAIN_ID,
+          address: t.address.toLowerCase(),
+          symbol: t.symbol,
+          decimals: t.decimals,
+          isFixture: true,
+        })),
+      )
+      .onConflictDoNothing();
 }
