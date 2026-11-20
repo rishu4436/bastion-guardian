@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.next/
+.turbo/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+# Foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/*/31337/
+contracts/out-evidence/
+# Keys — never commit
+*.key
+*.pem
+keystore/
+.DS_Store
