@@ -85,3 +85,11 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Install Playwright Chromium
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Playwright E2E (web + API + anvil LOCAL SIMULATION + Postgres + Redis)
+        working-directory: apps/web
+        run: pnpm test:e2e
+      - name: Local end-to-end script
+        run: bash contracts/script/local-e2e.sh

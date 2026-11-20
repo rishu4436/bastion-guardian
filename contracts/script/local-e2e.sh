@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LOCAL SIMULATION ONLY. Starts (or reuses) an anvil node on 127.0.0.1:8545 (chain 31337), installs the
+# LOCAL SIMULATION ONLY. Starts (or reuses) an anvil node on 127.0.0.1:8645 (chain 31337), installs the
 # Omni-compatible MockReactiveSystem at the Reactive system address, deploys the full BASTION stack with
 # LocalSimulationDeploy, then runs the TypeScript Reactive relay scenario (tools/local-e2e).
 # Nothing here talks to a public network. Usage: contracts/script/local-e2e.sh [--keep-anvil] [--deploy-only]
