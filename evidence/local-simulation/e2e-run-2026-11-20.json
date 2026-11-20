@@ -1,0 +1,77 @@
+{
+  "label": "LOCAL ANVIL SIMULATION — chain 31337 — NOT testnet evidence; timings are local wall-clock on one machine",
+  "generatedAt": "2026-11-20T08:28:45.003Z",
+  "chainId": 31337,
+  "crashTx": "0x1394d6ad566c4159b5ebd34dfcb86a0efa8c15df6353c450f1f9b634bc153bee",
+  "observeTxs": [
+    "0xcc17197caeb9c6bf7ec9e0db1e38fad0ca98831becccf678fef935f6615221c6",
+    "0x46a96c5fb5c8b39390fd383f0d622f53b4e4f89a9a5d8f1b87173ef1e1c13712"
+  ],
+  "cycles": {
+    "risk": [
+      {
+        "originTx": "0xcc17197caeb9c6bf7ec9e0db1e38fad0ca98831becccf678fef935f6615221c6",
+        "reactTx": "0xe2726a88b9bad0222bef6b3324f63a0c73d64e57eb7c11d2eafaf142b8077c82",
+        "ignoredReason": null,
+        "callbackRecipient": "0x4631BCAbD6dF18D94796344963cB60d44a4136b6",
+        "deliverTx": "0x8bb55603deabb5de290dbc64f16cf91adc784e2af6e17af189d890e7ea7c1942",
+        "success": true
+      },
+      {
+        "originTx": "0x46a96c5fb5c8b39390fd383f0d622f53b4e4f89a9a5d8f1b87173ef1e1c13712",
+        "reactTx": "0x7482157fa13dbf9de42ef5671de74452b4169c55f55d0695e7cbbf49b4cfcf34",
+        "ignoredReason": null,
+        "callbackRecipient": "0x4631BCAbD6dF18D94796344963cB60d44a4136b6",
+        "deliverTx": "0x6ed5442bd6a82c00fd5e817bd27f6b2f7c801b99991cf42455fe2837a74ce127",
+        "success": true
+      }
+    ],
+    "settlement": [
+      {
+        "originTx": "0x8bb55603deabb5de290dbc64f16cf91adc784e2af6e17af189d890e7ea7c1942",
+        "reactTx": "0x485cb4d77f6ac5c34de5b69ad76577effe906bc5a64aed3cb3cbba6e851f22d1",
+        "ignoredReason": null,
+        "callbackRecipient": "0x22753E4264FDDc6181dc7cce468904A80a363E44",
+        "deliverTx": "0xb1c650a24c50412c0d90ce6c4e243abf35e4a56607493dfb3ef24cbffce8d18f",
+        "success": true
+      }
+    ],
+    "acknowledgement": [
+      {
+        "originTx": "0xb1c650a24c50412c0d90ce6c4e243abf35e4a56607493dfb3ef24cbffce8d18f",
+        "reactTx": "0xd9baf3520eea2400f0caa2e9855f147498e107d09c757cd953f5389286ccec93",
+        "ignoredReason": null,
+        "callbackRecipient": "0x4631BCAbD6dF18D94796344963cB60d44a4136b6",
+        "deliverTx": "0x1562cb1e4686ecea7c99501fbe44dd096642ad4c5742f62a7b95cc3e61f0b9b4",
+        "success": true
+      }
+    ]
+  },
+  "borrowerA": {
+    "debtBefore": "13000000000",
+    "debtAfter": "10199989800",
+    "hfBefore": "1176923076923076923",
+    "hfAfter": "1500001500001500001",
+    "rescueId": "0xe5038acbd3301a83928c0c69564d7aed4146c642737e9f6b5f4e480ebdcfa65f"
+  },
+  "borrowerB": {
+    "debtBefore": "13000000000",
+    "debtAfter": "6358671202",
+    "hfBefore": "1176923076923076923",
+    "hfAfter": "1500170179041520442"
+  },
+  "reimbursement": {
+    "principal": "2800010200",
+    "fee": "14000051"
+  },
+  "localWallClockMs": {
+    "crashToRescued": 28105,
+    "crashToSettled": 44170
+  },
+  "safety": {
+    "replayDeliverTx": "0x3e707716f076391954b94b9613c8d3acc31ec2ccfe182f23418e2e812ae3633c",
+    "duplicateOriginReactTx": "0xf1e3be228684c9d745e17c566e8c674c79f92b91046c9c37d14ac5860e1f5c52",
+    "forgedDeliverTx": "0x0b6d187291e6c6614ca66b5ae13c615c2f98b41bc761b4fbcc22b02d22b9771c"
+  },
+  "failures": []
+}
