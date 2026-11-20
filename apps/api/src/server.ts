@@ -1,4 +1,5 @@
 import type { PublicClient } from "viem";
+import { Redis } from "ioredis";
 import { loadEnv } from "@bastion-guardian/config";
 import { createDatabase } from "@bastion-guardian/db";
 import { loadLocalDeployment } from "@bastion-guardian/contracts";
@@ -9,6 +10,7 @@ import { buildApp, type BuildOptions } from "./app.js";
 
 const env = loadEnv();
 const opts: BuildOptions = { env, logger: true };
+if (env.REDIS_URL) opts.rateLimitRedis = new Redis(env.REDIS_URL, { maxRetriesPerRequest: 1 });
 if (env.DATABASE_URL) {
   const db = createDatabase(env.DATABASE_URL);
   opts.db = db;

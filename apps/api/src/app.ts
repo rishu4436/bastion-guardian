@@ -11,6 +11,7 @@ import {
   jsonSchemaTransform,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
+import type { Redis } from "ioredis";
 import type { Env } from "@bastion-guardian/config";
 import { HttpError, type ApiContext } from "./context.js";
 import { registerAuth } from "./auth.js";
@@ -30,9 +31,16 @@ const DEV_PEPPER = "bastion-dev-only-pepper-not-for-production-use";
 export interface BuildOptions extends Partial<Omit<ApiContext, "env" | "pepper">> {
   env: Env;
   logger?: boolean;
+  /** R-10: shared rate-limit store. Every API instance pointing at the same Redis enforces one budget per client. */
+  rateLimitRedis?: Redis;
 }
 
-export async function buildApp({ env, logger = false, ...rest }: BuildOptions): Promise<FastifyInstance> {
+export async function buildApp({
+  env,
+  logger = false,
+  rateLimitRedis,
+  ...rest
+}: BuildOptions): Promise<FastifyInstance> {
   const ctx: ApiContext = {
     env,
     db: rest.db,
@@ -65,7 +73,15 @@ export async function buildApp({ env, logger = false, ...rest }: BuildOptions): 
     allowedHeaders: ["content-type", "x-csrf-token", "last-event-id"],
   });
   await app.register(cookie);
-  await app.register(rateLimit, { max: 120, timeWindow: "1 minute" });
+  if (!rateLimitRedis && env.NODE_ENV === "production")
+    throw new Error(
+      "REDIS_URL is required in production: rate limits must be shared across API instances (R-10)",
+    );
+  await app.register(rateLimit, {
+    max: 120,
+    timeWindow: "1 minute",
+    ...(rateLimitRedis ? { redis: rateLimitRedis, nameSpace: "bastion:api:rl:", skipOnError: false } : {}),
+  });
   await app.register(swagger, {
     openapi: {
       info: {
