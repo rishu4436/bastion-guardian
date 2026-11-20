@@ -491,6 +491,46 @@ importers:
         specifier: 3.2.7
         version: 3.2.7(@types/node@24.10.1)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1)
 
+  services/solver-node:
+    dependencies:
+      '@bastion-guardian/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@bastion-guardian/service-kit':
+        specifier: workspace:*
+        version: link:../../packages/service-kit
+      '@bastion-guardian/solver-coordinator':
+        specifier: workspace:*
+        version: link:../solver-coordinator
+      viem:
+        specifier: 2.40.3
+        version: 2.40.3(typescript@5.9.3)(zod@4.1.12)
+    devDependencies:
+      '@bastion-guardian/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@bastion-guardian/guardian-health':
+        specifier: workspace:*
+        version: link:../guardian-health
+      '@bastion-guardian/risk-observer':
+        specifier: workspace:*
+        version: link:../risk-observer
+      '@bastion/test-env':
+        specifier: workspace:*
+        version: link:../../tools/test-env
+      '@types/node':
+        specifier: 24.10.1
+        version: 24.10.1
+      drizzle-orm:
+        specifier: 0.45.4
+        version: 0.45.4(@types/pg@8.23.1)(pg@8.23.1)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@24.10.1)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1)
+
   tools/local-e2e:
     dependencies:
       '@bastion-guardian/contracts':

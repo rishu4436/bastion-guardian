@@ -1,0 +1,42 @@
+{
+  "name": "@bastion-guardian/solver-node",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reference BASTION solver: watches rescue-liquidity demand, commits inventory on-chain within risk limits and publishes signed quotes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bastion-guardian/contracts": "workspace:*",
+    "@bastion-guardian/service-kit": "workspace:*",
+    "@bastion-guardian/solver-coordinator": "workspace:*",
+    "viem": "2.40.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7",
+    "@bastion/test-env": "workspace:*",
+    "@bastion-guardian/guardian-health": "workspace:*",
+    "@bastion-guardian/risk-observer": "workspace:*",
+    "@bastion-guardian/db": "workspace:*",
+    "drizzle-orm": "0.45.4"
+  }
+}
