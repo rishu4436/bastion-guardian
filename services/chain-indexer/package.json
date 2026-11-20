@@ -1,0 +1,40 @@
+{
+  "name": "@bastion-guardian/chain-indexer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Indexes BASTION contract events into Postgres with checkpoints, reorg rollback and idempotent backfill.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bastion-guardian/contracts": "workspace:*",
+    "@bastion-guardian/db": "workspace:*",
+    "@bastion-guardian/observability": "workspace:*",
+    "@bastion-guardian/service-kit": "workspace:*",
+    "drizzle-orm": "0.45.4",
+    "viem": "2.40.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7",
+    "@bastion/local-e2e": "workspace:*"
+  }
+}

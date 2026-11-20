@@ -60,3 +60,39 @@ export async function seedReferenceData(db: Database): Promise<void> {
     .onConflictDoNothing();
   await db.execute(sql`select 1`);
 }
+
+export const LOCAL_CHAIN_ID = 31337;
+export const LOCAL_FIXTURE_PROTOCOL_ID = "fixture-local-31337";
+
+/**
+ * LOCAL SIMULATION reference rows: the private anvil chain and its labeled fixture lending market. `kind = 'fixture'`
+ * keeps these rows from ever being presented as an official protocol deployment.
+ */
+export async function seedLocalSimulation(
+  db: Database,
+  opts: { fixtureMarket: string; finalityDepth?: number },
+): Promise<void> {
+  await db
+    .insert(chains)
+    .values({
+      chainId: LOCAL_CHAIN_ID,
+      name: "Local Anvil (simulation)",
+      role: "local_simulation",
+      isTestnet: true,
+      explorerUrl: null,
+      finalityDepth: opts.finalityDepth ?? 2,
+    })
+    .onConflictDoNothing();
+  await db
+    .insert(protocols)
+    .values({
+      id: LOCAL_FIXTURE_PROTOCOL_ID,
+      name: "BASTION fixture lending market (local simulation)",
+      chainId: LOCAL_CHAIN_ID,
+      kind: "fixture",
+      poolAddress: opts.fixtureMarket.toLowerCase(),
+      status: "configured",
+      sourceUrl: null,
+    })
+    .onConflictDoNothing();
+}

@@ -273,6 +273,28 @@ importers:
         specifier: 3.2.7
         version: 3.2.7(@types/node@24.10.1)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1)
 
+  packages/service-kit:
+    dependencies:
+      '@bastion-guardian/observability':
+        specifier: workspace:*
+        version: link:../observability
+      viem:
+        specifier: 2.40.3
+        version: 2.40.3(typescript@5.9.3)(zod@4.1.12)
+      zod:
+        specifier: 4.1.12
+        version: 4.1.12
+    devDependencies:
+      '@types/node':
+        specifier: 24.10.1
+        version: 24.10.1
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@24.10.1)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1)
+
   packages/simulator:
     dependencies:
       '@bastion-guardian/risk-engine':
@@ -314,6 +336,40 @@ importers:
         specifier: workspace:*
         version: link:../types
     devDependencies:
+      '@types/node':
+        specifier: 24.10.1
+        version: 24.10.1
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 3.2.7
+        version: 3.2.7(@types/node@24.10.1)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1)
+
+  services/chain-indexer:
+    dependencies:
+      '@bastion-guardian/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@bastion-guardian/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@bastion-guardian/observability':
+        specifier: workspace:*
+        version: link:../../packages/observability
+      '@bastion-guardian/service-kit':
+        specifier: workspace:*
+        version: link:../../packages/service-kit
+      drizzle-orm:
+        specifier: 0.45.4
+        version: 0.45.4(@types/pg@8.23.1)(pg@8.23.1)
+      viem:
+        specifier: 2.40.3
+        version: 2.40.3(typescript@5.9.3)(zod@4.1.12)
+    devDependencies:
+      '@bastion/local-e2e':
+        specifier: workspace:*
+        version: link:../../tools/local-e2e
       '@types/node':
         specifier: 24.10.1
         version: 24.10.1

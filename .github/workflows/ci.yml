@@ -63,6 +63,15 @@ jobs:
       REQUIRE_INTEGRATION_INFRA: "true"
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      # Service integration tests boot a private anvil preloaded with the real contracts (LOCAL SIMULATION).
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.9.0
+      - name: Build contracts for local-stack integration tests
+        working-directory: contracts
+        run: forge build
       - uses: pnpm/action-setup@v4
         with:
           version: 10.34.6
