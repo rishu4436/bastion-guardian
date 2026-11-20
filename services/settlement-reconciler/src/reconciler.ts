@@ -54,6 +54,11 @@ export class SettlementReconciler {
 
   async tick(now = new Date()): Promise<Finding[]> {
     const out: Finding[] = [];
+    // Acknowledgment age is measured on the reserve chain's own clock: block timestamps can run ahead of (or behind)
+    // the wall clock, so mixing the two could hide a missing acknowledgment indefinitely.
+    const reserveNow = new Date(
+      Number((await this.reserve.getBlock({ blockTag: "latest" })).timestamp) * 1000,
+    );
     const fills = await this.db.select().from(solverFills);
     for (const f of fills) {
       const [claim] = await this.db
@@ -177,9 +182,9 @@ export class SettlementReconciler {
           .select()
           .from(rescueIntents)
           .where(eq(rescueIntents.rescueId, f.rescueId));
-        const reimbursedAt = reimbursed ? await this.blockTime(reimbursed) : now;
-        const age = (now.getTime() - reimbursedAt.getTime()) / 1000;
-        if (intent?.state !== "ReimbursementComplete" && age > this.cfg.ackTimeoutSec) {
+        const reimbursedAt = reimbursed ? await this.blockTime(reimbursed) : reserveNow;
+        const age = (reserveNow.getTime() - reimbursedAt.getTime()) / 1000;
+        if (intent?.state !== "ReimbursementComplete" && age >= this.cfg.ackTimeoutSec) {
           out.push(
             await this.incident(
               f.rescueId,
