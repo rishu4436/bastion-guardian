@@ -1,0 +1,31 @@
+{
+  "name": "@bastion/test-env",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Integration-test environment: local anvil stack (LOCAL SIMULATION) + isolated Postgres database + chain indexer.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@bastion/local-e2e": "workspace:*",
+    "@bastion-guardian/chain-indexer": "workspace:*",
+    "@bastion-guardian/db": "workspace:*",
+    "viem": "2.40.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3"
+  }
+}

@@ -19,6 +19,7 @@ import {
   http,
   publicActions,
   type PublicClient,
+  type WalletClient,
 } from "viem";
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { foundry } from "viem/chains";
@@ -158,7 +159,7 @@ export interface LocalStack {
   addresses: LocalDeployment;
   public: PublicClient;
   test: ReturnType<typeof makeTest>;
-  wallet: ReturnType<typeof makeWallet>;
+  wallet: WalletClient;
   accounts: Record<keyof typeof DEV_KEYS, PrivateKeyAccount>;
   relay: LocalReactiveRelay;
   /** Sets the fixture oracle fWETH price (8-decimals USD) as governance. */
