@@ -51,4 +51,11 @@ describe("Guardian readiness", () => {
     i.protection.flashFeasible = true;
     expect(evaluateReadiness(i).status).toBe("ARMED");
   });
+
+  it("unused policy budget alone is not rescue capacity (UNAVAILABLE, not LIMITED)", () => {
+    const i = good();
+    i.protection.solverCoverage = 0n;
+    i.protection.flashFeasible = false;
+    expect(evaluateReadiness(i).status).toBe("UNAVAILABLE");
+  });
 });

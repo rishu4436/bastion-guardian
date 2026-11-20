@@ -97,7 +97,8 @@ export function evaluateReadiness(i: ReadinessInput): ReadinessReport {
         vaultOk || flashOk ? "pass" : "warn",
         vaultOk || flashOk ? undefined : "Solver capacity present but vault reimbursement budget is short",
       );
-    else if ((p.solverCoverage ?? 0n) > 0n || (budget ?? 0n) > 0n)
+    // Unused policy budget is a limit, not capacity: partial capacity needs actual committed solver liquidity.
+    else if ((p.solverCoverage ?? 0n) > 0n && (budget ?? 0n) > 0n)
       set("capacity", "warn", "Only partial rescue capacity available");
     else if (p.solverCoverage === null && p.flashFeasible === null)
       set("capacity", "unknown", "Rescue capacity not observed");
