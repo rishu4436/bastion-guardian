@@ -1,0 +1,18 @@
+Compiling 1 files with Solc 0.8.29
+Solc 0.8.29 finished in 3.42s
+Compiler run successful!
+Ran 3 tests for test/fork/AaveV3BaseSepoliaFork.t.sol:AaveV3BaseSepoliaForkTest
+[PASS] test_fork_adapterReadsRealAavePosition() (gas: 320371)
+[PASS] test_fork_flashRescueUsesRealAaveFlashLoan() (gas: 3193451)
+Logs:
+  HF before: 1089743589046931865
+  HF after: 1450260340539110936
+[PASS] test_fork_solverRescueRepaysRealAaveDebt() (gas: 3135098)
+Logs:
+  fork block: 61193053
+  debt before (USDC 6dp): 2718831519
+  debt after  (USDC 6dp): 2043328451
+  HF before: 1089743589046931865
+  HF after: 1450001450370052296
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 161.08ms (9.83ms CPU time)
+Ran 1 test suite in 161.59ms (161.08ms CPU time): 3 tests passed, 0 failed, 0 skipped (3 total tests)

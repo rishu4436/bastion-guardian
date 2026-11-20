@@ -1,0 +1,410 @@
+
+Detector: arbitrary-send-erc20
+AaveV3LendingAdapter.withdrawCollateralFor(address,address,uint256,address) (src/adapters/AaveV3LendingAdapter.sol#193-205) uses arbitrary from in transferFrom: IERC20(aToken).safeTransferFrom(account,address(this),amount) (src/adapters/AaveV3LendingAdapter.sol#202)
+FixtureLendingMarket.flashLoanSimple(address,address,uint256,bytes,uint16) (src/fixtures/FixtureLendingMarket.sol#186-200) uses arbitrary from in transferFrom: IERC20(asset).safeTransferFrom(receiver,address(this),amount + premium) (src/fixtures/FixtureLendingMarket.sol#197)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#arbitrary-from-in-transferfrom
+
+Detector: reentrancy-balance
+Reentrancy in FlashRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/FlashRescueExecutor.sol#110-172):
+	External call allowing reentrancy:
+	- IAaveV3Pool(lender).flashLoanSimple(address(this),p.debtAsset,repay,params,0) (src/rescue/FlashRescueExecutor.sol#149)
+	Balance read before the call:
+	- premiumBefore = IERC20(p.debtAsset).balanceOf(address(this)) (src/rescue/FlashRescueExecutor.sol#148)
+	Possible stale balance used after the call in a condition:
+	- IERC20(p.debtAsset).balanceOf(address(this)) > premiumBefore (src/rescue/FlashRescueExecutor.sol#152)
+		- stale variable `premiumBefore`
+Reentrancy in SolverRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/SolverRescueExecutor.sol#83-144):
+	External call allowing reentrancy:
+	- LIQUIDITY.draw(best.id,amount,address(this)) (src/rescue/SolverRescueExecutor.sol#110)
+	Balance read before the call:
+	- balBefore = debtToken.balanceOf(address(this)) (src/rescue/SolverRescueExecutor.sol#109)
+	Possible stale balance used after the call in a condition:
+	- after_.debtAmount >= pos.debtAmount || pos.debtAmount - after_.debtAmount + 1 < spent (src/rescue/SolverRescueExecutor.sol#124)
+		- stale variable `spent`
+Reentrancy in SolverRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/SolverRescueExecutor.sol#83-144):
+	External call allowing reentrancy:
+	- adapter.repayOnBehalf(p.debtAsset,amount,p.account) (src/rescue/SolverRescueExecutor.sol#112)
+	Balance read before the call:
+	- balBefore = debtToken.balanceOf(address(this)) (src/rescue/SolverRescueExecutor.sol#109)
+	Possible stale balance used after the call in a condition:
+	- after_.debtAmount >= pos.debtAmount || pos.debtAmount - after_.debtAmount + 1 < spent (src/rescue/SolverRescueExecutor.sol#124)
+		- stale variable `spent`
+Reentrancy in SolverRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/SolverRescueExecutor.sol#83-144):
+	External call allowing reentrancy:
+	- LIQUIDITY.returnUnused(best.id,unused) (src/rescue/SolverRescueExecutor.sol#119)
+	Balance read before the call:
+	- balAfter = debtToken.balanceOf(address(this)) (src/rescue/SolverRescueExecutor.sol#114)
+	Possible stale balance used after the call in a condition:
+	- after_.debtAmount >= pos.debtAmount || pos.debtAmount - after_.debtAmount + 1 < spent (src/rescue/SolverRescueExecutor.sol#124)
+		- stale variable `spent`
+Reentrancy in SolverRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/SolverRescueExecutor.sol#83-144):
+	External call allowing reentrancy:
+	- LIQUIDITY.returnUnused(best.id,unused) (src/rescue/SolverRescueExecutor.sol#119)
+	Balance read before the call:
+	- balBefore = debtToken.balanceOf(address(this)) (src/rescue/SolverRescueExecutor.sol#109)
+	Possible stale balance used after the call in a condition:
+	- after_.debtAmount >= pos.debtAmount || pos.debtAmount - after_.debtAmount + 1 < spent (src/rescue/SolverRescueExecutor.sol#124)
+		- stale variable `spent`
+Reentrancy in FlashRescueExecutor.executeOperation(address,uint256,uint256,address,bytes) (src/rescue/FlashRescueExecutor.sol#179-223):
+	External call allowing reentrancy:
+	- ISwapVenue(ctx.venue).swapExactIn(ctx.collateralAsset,ctx.debtAsset,collNeeded,owed,address(this)) (src/rescue/FlashRescueExecutor.sol#210)
+	Balance read before the call:
+	- balBefore = debt.balanceOf(address(this)) (src/rescue/FlashRescueExecutor.sol#209)
+	Possible stale balance used after the call in a condition:
+	- out < owed (src/rescue/FlashRescueExecutor.sol#213)
+		- stale variable `out`
+Reentrancy in FixtureLendingMarket.flashLoanSimple(address,address,uint256,bytes,uint16) (src/fixtures/FixtureLendingMarket.sol#186-200):
+	External call allowing reentrancy:
+	- require(bool,string)(IFlashLoanSimpleReceiver(receiver).executeOperation(asset,amount,premium,msg.sender,params),FLASH_CALLBACK) (src/fixtures/FixtureLendingMarket.sol#193-196)
+	Balance read before the call:
+	- balBefore = IERC20(asset).balanceOf(address(this)) (src/fixtures/FixtureLendingMarket.sol#191)
+	Possible stale balance used after the call in a condition:
+	- require(bool,string)(IERC20(asset).balanceOf(address(this)) >= balBefore + premium,FLASH_UNPAID) (src/fixtures/FixtureLendingMarket.sol#198)
+		- stale variable `balBefore`
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities
+
+Detector: incorrect-equality
+AaveV3LendingAdapter.estimateDeleverage(address,address,address,uint256,uint256) (src/adapters/AaveV3LendingAdapter.sol#115-135) uses a dangerous strict equality:
+	- xBase == type()(uint256).max (src/adapters/AaveV3LendingAdapter.sol#131)
+AaveV3LendingAdapter.estimateDeleverage(address,address,address,uint256,uint256) (src/adapters/AaveV3LendingAdapter.sol#115-135) uses a dangerous strict equality:
+	- xBase == 0 (src/adapters/AaveV3LendingAdapter.sol#132)
+AaveV3LendingAdapter.validateRescue(address,address,address) (src/adapters/AaveV3LendingAdapter.sol#137-149) uses a dangerous strict equality:
+	- getDebt(account,debtAsset) == 0 (src/adapters/AaveV3LendingAdapter.sol#147)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+
+Detector: reentrancy-no-eth
+Reentrancy in CrossChainReserveEscrow._attempt(bytes32,CrossChainReserveEscrow.Claim) (src/settlement/CrossChainReserveEscrow.sol#130-145):
+	External calls:
+	- VAULT.settle(c.policyId,c.recipient,c.principal,c.fee,c.executedAt) (src/settlement/CrossChainReserveEscrow.sol#135-144)
+	State variables written after the call(s):
+	- c.lastError = 0 (src/settlement/CrossChainReserveEscrow.sol#136)
+	CrossChainReserveEscrow._claims (src/settlement/CrossChainReserveEscrow.sol#44) can be used in cross function reentrancies:
+	- CrossChainReserveEscrow.dispute(bytes32,bytes32) (src/settlement/CrossChainReserveEscrow.sol#115-121)
+	- CrossChainReserveEscrow.getClaim(bytes32) (src/settlement/CrossChainReserveEscrow.sol#123-125)
+	- c.lastError = reason (src/settlement/CrossChainReserveEscrow.sol#140)
+	CrossChainReserveEscrow._claims (src/settlement/CrossChainReserveEscrow.sol#44) can be used in cross function reentrancies:
+	- CrossChainReserveEscrow.dispute(bytes32,bytes32) (src/settlement/CrossChainReserveEscrow.sol#115-121)
+	- CrossChainReserveEscrow.getClaim(bytes32) (src/settlement/CrossChainReserveEscrow.sol#123-125)
+	- c.state = SettlementState.RecoveryRequired (src/settlement/CrossChainReserveEscrow.sol#141)
+	CrossChainReserveEscrow._claims (src/settlement/CrossChainReserveEscrow.sol#44) can be used in cross function reentrancies:
+	- CrossChainReserveEscrow.dispute(bytes32,bytes32) (src/settlement/CrossChainReserveEscrow.sol#115-121)
+	- CrossChainReserveEscrow.getClaim(bytes32) (src/settlement/CrossChainReserveEscrow.sol#123-125)
+	- pendingRecovery += 1 (src/settlement/CrossChainReserveEscrow.sol#142)
+	CrossChainReserveEscrow.pendingRecovery (src/settlement/CrossChainReserveEscrow.sol#45) can be used in cross function reentrancies:
+	- CrossChainReserveEscrow.dispute(bytes32,bytes32) (src/settlement/CrossChainReserveEscrow.sol#115-121)
+	- CrossChainReserveEscrow.pendingRecovery (src/settlement/CrossChainReserveEscrow.sol#45)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+Detector: uninitialized-local
+BastionCallbackRouter.onSettlementAck(address,bytes32,bytes32).changed (src/callbacks/BastionCallbackRouter.sol#112) is a local variable never initialized
+FixtureLendingMarket.getUserAccountData(address).weightedLtv (src/fixtures/FixtureLendingMarket.sol#239) is a local variable never initialized
+FixtureLendingMarket.getUserAccountData(address).weightedLt (src/fixtures/FixtureLendingMarket.sol#238) is a local variable never initialized
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16).n (src/solvers/SolverQuoteManager.sol#44) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+
+Detector: unused-return
+AaveV3LendingAdapter.getPosition(address,address,address) (src/adapters/AaveV3LendingAdapter.sol#65-81) ignores return value by (pos.totalCollateralBase,pos.totalDebtBase,None,pos.currentLiquidationThreshold,None,pos.healthFactor) = POOL.getUserAccountData(account) (src/adapters/AaveV3LendingAdapter.sol#70-71)
+AaveV3LendingAdapter.getHealthFactor(address) (src/adapters/AaveV3LendingAdapter.sol#83-85) ignores return value by (None,None,None,None,None,hf) = POOL.getUserAccountData(account) (src/adapters/AaveV3LendingAdapter.sol#84)
+AaveV3LendingAdapter.estimateRepayment(address,address,uint256) (src/adapters/AaveV3LendingAdapter.sol#105-113) ignores return value by (tc,td,None,lt,None,None) = POOL.getUserAccountData(account) (src/adapters/AaveV3LendingAdapter.sol#106)
+BastionCallbackRouter._feasible(IBastionExecutor,bytes32) (src/callbacks/BastionCallbackRouter.sol#202-209) ignores return value by (ok) = ex.isFeasible(policyId) (src/callbacks/BastionCallbackRouter.sol#204-208)
+BastionCallbackRouter._try(IBastionExecutor,BastionTypes.RescueRequest) (src/callbacks/BastionCallbackRouter.sol#211-222) ignores return value by ex.execute{gas: forward}(req) (src/callbacks/BastionCallbackRouter.sol#214-221)
+FlashRescueExecutor.executeOperation(address,uint256,uint256,address,bytes) (src/rescue/FlashRescueExecutor.sol#179-223) ignores return value by ISwapVenue(ctx.venue).swapExactIn(ctx.collateralAsset,ctx.debtAsset,collNeeded,owed,address(this)) (src/rescue/FlashRescueExecutor.sol#210)
+SolverRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/SolverRescueExecutor.sol#83-144) ignores return value by adapter.repayOnBehalf(p.debtAsset,amount,p.account) (src/rescue/SolverRescueExecutor.sol#112)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+Detector: events-maths
+FixtureLendingMarket.setFlashPremium(uint128) (src/fixtures/FixtureLendingMarket.sol#130-133) should emit an event for: 
+	- FLASHLOAN_PREMIUM_TOTAL = bps (src/fixtures/FixtureLendingMarket.sol#132) 
+FixtureSwapVenue.setExecutionCostBps(uint256) (src/fixtures/FixtureSwapVenue.sol#31-34) should emit an event for: 
+	- executionCostBps = bps (src/fixtures/FixtureSwapVenue.sol#33) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-arithmetic
+
+Detector: missing-zero-check
+FixtureCollateralToken.constructor(string,string,uint8,address).underlying_ (src/fixtures/FixtureLendingMarket.sol#22) lacks a zero-check on :
+		- UNDERLYING = underlying_ (src/fixtures/FixtureLendingMarket.sol#24)
+FixtureDebtToken.constructor(address).underlying_ (src/fixtures/FixtureLendingMarket.sol#55) lacks a zero-check on :
+		- UNDERLYING = underlying_ (src/fixtures/FixtureLendingMarket.sol#57)
+BastionReactiveCore.constructor(address).owner_ (src/reactive/BastionReactiveCore.sol#93) lacks a zero-check on :
+		- owner = owner_ (src/reactive/BastionReactiveCore.sol#94)
+BastionReactiveCore.transferOwnership(address).newOwner (src/reactive/BastionReactiveCore.sol#100) lacks a zero-check on :
+		- pendingOwner = newOwner (src/reactive/BastionReactiveCore.sol#101)
+SolverRegistry.setLiquidityVault(address).vault (src/solvers/SolverRegistry.sol#58) lacks a zero-check on :
+		- liquidityVault = vault (src/solvers/SolverRegistry.sol#59)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-zero-address-validation
+
+Detector: calls-loop
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: price = ORACLE.getAssetPrice(asset) (src/fixtures/FixtureLendingMarket.sol#243)
+	Calls stack containing the loop:
+		FixtureLendingMarket.withdraw(address,uint256,address)
+		FixtureLendingMarket._healthFactor(address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: cBal = r.aToken.balanceOf(user) (src/fixtures/FixtureLendingMarket.sol#244)
+	Calls stack containing the loop:
+		FixtureLendingMarket.withdraw(address,uint256,address)
+		FixtureLendingMarket._healthFactor(address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: price = ORACLE.getAssetPrice(asset) (src/fixtures/FixtureLendingMarket.sol#243)
+	Calls stack containing the loop:
+		FixtureLendingMarket.borrow(address,uint256,uint256,uint16,address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: cBal = r.aToken.balanceOf(user) (src/fixtures/FixtureLendingMarket.sol#244)
+	Calls stack containing the loop:
+		FixtureLendingMarket.borrow(address,uint256,uint256,uint16,address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: price = ORACLE.getAssetPrice(asset) (src/fixtures/FixtureLendingMarket.sol#243)
+	Calls stack containing the loop:
+		FixtureLendingMarket.liquidationCall(address,address,address,uint256)
+		FixtureLendingMarket._healthFactor(address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: cBal = r.aToken.balanceOf(user) (src/fixtures/FixtureLendingMarket.sol#244)
+	Calls stack containing the loop:
+		FixtureLendingMarket.liquidationCall(address,address,address,uint256)
+		FixtureLendingMarket._healthFactor(address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: price = ORACLE.getAssetPrice(asset) (src/fixtures/FixtureLendingMarket.sol#243)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: cBal = r.aToken.balanceOf(user) (src/fixtures/FixtureLendingMarket.sol#244)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: price = ORACLE.getAssetPrice(asset) (src/fixtures/FixtureLendingMarket.sol#243)
+	Calls stack containing the loop:
+		FixtureLendingMarket.validateCollateralTransfer(address)
+		FixtureLendingMarket._healthFactor(address)
+FixtureLendingMarket.getUserAccountData(address) (src/fixtures/FixtureLendingMarket.sol#226-261) has external calls inside a loop: cBal = r.aToken.balanceOf(user) (src/fixtures/FixtureLendingMarket.sol#244)
+	Calls stack containing the loop:
+		FixtureLendingMarket.validateCollateralTransfer(address)
+		FixtureLendingMarket._healthFactor(address)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: c = VAULT.getCommitment(ids[i]) (src/solvers/SolverQuoteManager.sol#46)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: ! SOLVERS.isEligible(c.solver) (src/solvers/SolverQuoteManager.sol#49)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: ! POLICIES.isSolverAllowed(policyId,c.solver) (src/solvers/SolverQuoteManager.sol#50)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: tmp[n ++] = Candidate(ids[i],c.solver,c.amount,c.feeBps,SOLVERS.getSolver(c.solver).failures) (src/solvers/SolverQuoteManager.sol#51)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: c = VAULT.getCommitment(ids[i]) (src/solvers/SolverQuoteManager.sol#46)
+	Calls stack containing the loop:
+		SolverQuoteManager.selectBest(bytes32,address,uint256,uint16)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: ! SOLVERS.isEligible(c.solver) (src/solvers/SolverQuoteManager.sol#49)
+	Calls stack containing the loop:
+		SolverQuoteManager.selectBest(bytes32,address,uint256,uint16)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: ! POLICIES.isSolverAllowed(policyId,c.solver) (src/solvers/SolverQuoteManager.sol#50)
+	Calls stack containing the loop:
+		SolverQuoteManager.selectBest(bytes32,address,uint256,uint16)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) has external calls inside a loop: tmp[n ++] = Candidate(ids[i],c.solver,c.amount,c.feeBps,SOLVERS.getSolver(c.solver).failures) (src/solvers/SolverQuoteManager.sol#51)
+	Calls stack containing the loop:
+		SolverQuoteManager.selectBest(bytes32,address,uint256,uint16)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+
+Detector: reentrancy-benign
+Reentrancy in FlashRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/FlashRescueExecutor.sol#110-172):
+	External calls:
+	- IAaveV3Pool(lender).flashLoanSimple(address(this),p.debtAsset,repay,params,0) (src/rescue/FlashRescueExecutor.sol#149)
+	State variables written after the call(s):
+	- _lastPremium = 0 (src/rescue/FlashRescueExecutor.sol#164)
+Reentrancy in FlashRescueExecutor.execute(BastionTypes.RescueRequest) (src/rescue/FlashRescueExecutor.sol#110-172):
+	External calls:
+	- IAaveV3Pool(lender).flashLoanSimple(address(this),p.debtAsset,repay,params,0) (src/rescue/FlashRescueExecutor.sol#149)
+	- POLICIES.consume(req.policyId,req.policyVersion,BastionTypes.PATH_FLASH,r.repaid,r.fee) (src/rescue/FlashRescueExecutor.sol#166)
+	- LEDGER.recordFlashExecution(req.rescueId,r.repaid,r.fee) (src/rescue/FlashRescueExecutor.sol#167)
+	- _receipt(req,p,adapter,r,p.destChainId) (src/rescue/FlashRescueExecutor.sol#168)
+		- RECEIPTS.record(RescueReceiptRegistry.Receipt({rescueId:req.rescueId,policyId:req.policyId,policyVersion:req.policyVersion,originEventId:req.originEventId,originChainId:originChainId,account:p.account,protocolId:adapter.protocolId(),path:r.path,debtAsset:p.debtAsset,repaid:r.repaid,debtBefore:r.debtBefore,debtAfter:r.debtAfter,healthFactorBefore:r.healthFactorBefore,healthFactorAfter:r.healthFactorAfter,solver:r.solver,fee:r.fee,executedAt:uint64(block.timestamp),executedBlock:block.number,settlementRef:bytes32(0)})) (src/rescue/BastionExecutorBase.sol#67-89)
+	State variables written after the call(s):
+	- _lastSold = 0 (src/rescue/FlashRescueExecutor.sol#170)
+	- _lastSurplus = 0 (src/rescue/FlashRescueExecutor.sol#171)
+Reentrancy in FlashRescueExecutor.executeOperation(address,uint256,uint256,address,bytes) (src/rescue/FlashRescueExecutor.sol#179-223):
+	External calls:
+	- repaid = adapter.repayOnBehalf(ctx.debtAsset,amount,ctx.account) (src/rescue/FlashRescueExecutor.sol#196)
+	- got = adapter.withdrawCollateralFor(ctx.account,ctx.collateralAsset,collNeeded,address(this)) (src/rescue/FlashRescueExecutor.sol#203)
+	- ISwapVenue(ctx.venue).swapExactIn(ctx.collateralAsset,ctx.debtAsset,collNeeded,owed,address(this)) (src/rescue/FlashRescueExecutor.sol#210)
+	State variables written after the call(s):
+	- _lastPremium = premium (src/rescue/FlashRescueExecutor.sol#219)
+	- _lastSold = collNeeded (src/rescue/FlashRescueExecutor.sol#220)
+	- _lastSurplus = surplus (src/rescue/FlashRescueExecutor.sol#221)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+
+Detector: reentrancy-events
+Reentrancy in BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187):
+	External calls:
+	- LEDGER.open(rescueId,policyId,policyVersion,originEventId) (src/callbacks/BastionCallbackRouter.sol#156)
+	- LEDGER.recordExpired(rescueId,GLOBAL_PAUSE) (src/callbacks/BastionCallbackRouter.sol#159)
+	Event emitted after the call(s):
+	- SignalRejected(originEventId,policyId,GLOBAL_PAUSE) (src/callbacks/BastionCallbackRouter.sol#160)
+Reentrancy in BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187):
+	External calls:
+	- LEDGER.open(rescueId,policyId,policyVersion,originEventId) (src/callbacks/BastionCallbackRouter.sol#156)
+	- LEDGER.recordExpired(rescueId,STALE_SIGNAL) (src/callbacks/BastionCallbackRouter.sol#164)
+	Event emitted after the call(s):
+	- SignalRejected(originEventId,policyId,STALE_SIGNAL) (src/callbacks/BastionCallbackRouter.sol#165)
+Reentrancy in BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187):
+	External calls:
+	- LEDGER.open(rescueId,policyId,policyVersion,originEventId) (src/callbacks/BastionCallbackRouter.sol#156)
+	- LEDGER.recordExpired(rescueId,reason) (src/callbacks/BastionCallbackRouter.sol#170)
+	Event emitted after the call(s):
+	- SignalRejected(originEventId,policyId,reason) (src/callbacks/BastionCallbackRouter.sol#171)
+Reentrancy in BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187):
+	External calls:
+	- LEDGER.open(rescueId,policyId,policyVersion,originEventId) (src/callbacks/BastionCallbackRouter.sol#156)
+	- LEDGER.recordFailure(rescueId,NO_FEASIBLE_PATH) (src/callbacks/BastionCallbackRouter.sol#179)
+	Event emitted after the call(s):
+	- RescueAttempted(rescueId,policyId,0,false,NO_FEASIBLE_PATH) (src/callbacks/BastionCallbackRouter.sol#180)
+Reentrancy in BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187):
+	External calls:
+	- LEDGER.open(rescueId,policyId,policyVersion,originEventId) (src/callbacks/BastionCallbackRouter.sol#156)
+	- LEDGER.authorize(rescueId,first.path()) (src/callbacks/BastionCallbackRouter.sol#183)
+	- _try(first,req) (src/callbacks/BastionCallbackRouter.sol#184)
+		- ex.execute{gas: forward}(req) (src/callbacks/BastionCallbackRouter.sol#214-221)
+	Event emitted after the call(s):
+	- RescueAttempted(req.rescueId,req.policyId,ex.path(),true,0) (src/callbacks/BastionCallbackRouter.sol#215)
+		- _try(first,req) (src/callbacks/BastionCallbackRouter.sol#184)
+	- RescueAttempted(req.rescueId,req.policyId,ex.path(),false,reason) (src/callbacks/BastionCallbackRouter.sol#219)
+		- _try(first,req) (src/callbacks/BastionCallbackRouter.sol#184)
+Reentrancy in BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187):
+	External calls:
+	- LEDGER.open(rescueId,policyId,policyVersion,originEventId) (src/callbacks/BastionCallbackRouter.sol#156)
+	- LEDGER.authorize(rescueId,first.path()) (src/callbacks/BastionCallbackRouter.sol#183)
+	- address(second) != address(0) && _try(second,req) (src/callbacks/BastionCallbackRouter.sol#185)
+		- ex.execute{gas: forward}(req) (src/callbacks/BastionCallbackRouter.sol#214-221)
+	Event emitted after the call(s):
+	- RescueAttempted(req.rescueId,req.policyId,ex.path(),true,0) (src/callbacks/BastionCallbackRouter.sol#215)
+		- address(second) != address(0) && _try(second,req) (src/callbacks/BastionCallbackRouter.sol#185)
+	- RescueAttempted(req.rescueId,req.policyId,ex.path(),false,reason) (src/callbacks/BastionCallbackRouter.sol#219)
+		- address(second) != address(0) && _try(second,req) (src/callbacks/BastionCallbackRouter.sol#185)
+Reentrancy in BastionReactiveCore._request(bytes32,uint8,BastionReactiveCore.Destination,bytes) (src/reactive/BastionReactiveCore.sol#283-295):
+	External calls:
+	- SYSTEM.requestCallbackV_1_0(ISystemContract.CallbackConfiguration_V_1_0({chainId:d.chainId,recipient:d.recipient,gasLimit:d.gasLimit,payload:payload})) (src/reactive/BastionReactiveCore.sol#286-293)
+	Event emitted after the call(s):
+	- CallbackRequested(eventId,kind,d.chainId,d.recipient) (src/reactive/BastionReactiveCore.sol#294)
+Reentrancy in BastionCallbackRouter._try(IBastionExecutor,BastionTypes.RescueRequest) (src/callbacks/BastionCallbackRouter.sol#211-222):
+	External calls:
+	- ex.execute{gas: forward}(req) (src/callbacks/BastionCallbackRouter.sol#214-221)
+	Event emitted after the call(s):
+	- RescueAttempted(req.rescueId,req.policyId,ex.path(),true,0) (src/callbacks/BastionCallbackRouter.sol#215)
+	- RescueAttempted(req.rescueId,req.policyId,ex.path(),false,reason) (src/callbacks/BastionCallbackRouter.sol#219)
+Reentrancy in FixtureLendingMarket.flashLoanSimple(address,address,uint256,bytes,uint16) (src/fixtures/FixtureLendingMarket.sol#186-200):
+	External calls:
+	- require(bool,string)(IFlashLoanSimpleReceiver(receiver).executeOperation(asset,amount,premium,msg.sender,params),FLASH_CALLBACK) (src/fixtures/FixtureLendingMarket.sol#193-196)
+	Event emitted after the call(s):
+	- FlashLoan(receiver,asset,amount,premium) (src/fixtures/FixtureLendingMarket.sol#199)
+Reentrancy in BastionCallbackRouter.onSettlementAck(address,bytes32,bytes32) (src/callbacks/BastionCallbackRouter.sol#97-121):
+	External calls:
+	- c = LEDGER.recordReimbursed(rescueId,settlementEventId) (src/callbacks/BastionCallbackRouter.sol#113-118)
+	Event emitted after the call(s):
+	- SignalRejected(settlementEventId,rescueId,INVALID_ACK_STATE) (src/callbacks/BastionCallbackRouter.sol#116)
+Reentrancy in BastionCallbackRouter.onSettlementAck(address,bytes32,bytes32) (src/callbacks/BastionCallbackRouter.sol#97-121):
+	External calls:
+	- c = LEDGER.recordReimbursed(rescueId,settlementEventId) (src/callbacks/BastionCallbackRouter.sol#113-118)
+	- RECEIPTS.attachSettlement(rescueId,settlementEventId) (src/callbacks/BastionCallbackRouter.sol#119)
+	Event emitted after the call(s):
+	- SettlementAcknowledged(rescueId,settlementEventId,changed) (src/callbacks/BastionCallbackRouter.sol#120)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+
+Detector: timestamp
+BastionCallbackRouter._handleSignal(bytes32,uint256,bytes32,uint64,uint256,uint64) (src/callbacks/BastionCallbackRouter.sol#136-187) uses timestamp for comparisons
+	Dangerous comparisons:
+	- observedAt > block.timestamp + 30 || block.timestamp > uint256(observedAt) + maxSignalAge (src/callbacks/BastionCallbackRouter.sol#163)
+BastionRiskObserver.observe(bytes32) (src/oracles/BastionRiskObserver.sol#36-46) uses timestamp for comparisons
+	Dangerous comparisons:
+	- s.status != BastionTypes.PolicyStatus.Active || p.expiry <= block.timestamp (src/oracles/BastionRiskObserver.sol#38)
+	- last != 0 && block.timestamp < uint256(last) + MIN_INTERVAL (src/oracles/BastionRiskObserver.sol#42)
+OracleRiskAdapter.assess(address) (src/oracles/OracleRiskAdapter.sol#51-75) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > uint256(signalUpdatedAt) + f.maxAge (src/oracles/OracleRiskAdapter.sol#67)
+BastionPolicyRegistry.resumePolicy(bytes32) (src/policies/BastionPolicyRegistry.sol#183-191) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _policies[policyId].expiry <= block.timestamp (src/policies/BastionPolicyRegistry.sol#186)
+BastionPolicyRegistry.checkExecutable(bytes32,uint64,uint8) (src/policies/BastionPolicyRegistry.sol#262-278) uses timestamp for comparisons
+	Dangerous comparisons:
+	- p.expiry <= block.timestamp (src/policies/BastionPolicyRegistry.sol#272)
+	- s.lastActionAt != 0 && block.timestamp < uint256(s.lastActionAt) + p.cooldown (src/policies/BastionPolicyRegistry.sol#275)
+BastionPolicyRegistry._requireExecutable(bytes32,uint64,uint8,BastionTypes.PolicyState,BastionTypes.Policy) (src/policies/BastionPolicyRegistry.sol#282-297) uses timestamp for comparisons
+	Dangerous comparisons:
+	- p.expiry <= block.timestamp (src/policies/BastionPolicyRegistry.sol#291)
+	- s.lastActionAt != 0 && block.timestamp < uint256(s.lastActionAt) + p.cooldown (src/policies/BastionPolicyRegistry.sol#294)
+BastionPolicyRegistry._validate(BastionTypes.Policy,address[],address[]) (src/policies/BastionPolicyRegistry.sol#305-334) uses timestamp for comparisons
+	Dangerous comparisons:
+	- p.expiry <= block.timestamp (src/policies/BastionPolicyRegistry.sol#326)
+BastionReactiveCore._onRiskSignal(bytes32,IReactive.LogRecord) (src/reactive/BastionReactiveCore.sol#220-246) uses timestamp for comparisons
+	Dangerous comparisons:
+	- m.lastTriggerAt != 0 && block.timestamp < uint256(m.lastTriggerAt) + m.cooldown (src/reactive/BastionReactiveCore.sol#228)
+BastionReactiveCore._takeRateSlot() (src/reactive/BastionReactiveCore.sol#297-305) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= uint256(windowStart) + rateWindow (src/reactive/BastionReactiveCore.sol#298)
+RescueSettlementLedger.exists(bytes32) (src/settlement/RescueSettlementLedger.sol#150-152) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _records[rescueId].state != State.None (src/settlement/RescueSettlementLedger.sol#151)
+SolverLiquidityVault.commit(bytes32,address,uint256,uint16,uint64) (src/solvers/SolverLiquidityVault.sol#91-113) uses timestamp for comparisons
+	Dangerous comparisons:
+	- amount == 0 || expiry <= block.timestamp || feeBps > 1_000 (src/solvers/SolverLiquidityVault.sol#97)
+SolverLiquidityVault.release(bytes32) (src/solvers/SolverLiquidityVault.sol#116-121) uses timestamp for comparisons
+	Dangerous comparisons:
+	- msg.sender != c.solver && block.timestamp < c.expiry (src/solvers/SolverLiquidityVault.sol#119)
+SolverLiquidityVault.draw(bytes32,uint256,address) (src/solvers/SolverLiquidityVault.sol#125-136) uses timestamp for comparisons
+	Dangerous comparisons:
+	- ! c.active || block.timestamp >= c.expiry (src/solvers/SolverLiquidityVault.sol#128)
+SolverQuoteManager.rankedCandidates(bytes32,address,uint256,uint16) (src/solvers/SolverQuoteManager.sol#37-67) uses timestamp for comparisons
+	Dangerous comparisons:
+	- ! c.active || c.amount == 0 || c.expiry <= block.timestamp || c.token != token (src/solvers/SolverQuoteManager.sol#47)
+SolverRegistry.completeExit() (src/solvers/SolverRegistry.sol#103-116) uses timestamp for comparisons
+	Dangerous comparisons:
+	- s.exitRequestedAt == 0 || block.timestamp < uint256(s.exitRequestedAt) + exitDelay (src/solvers/SolverRegistry.sol#105)
+BastionProtectionVault.release(bytes32,uint256,uint256) (src/vaults/BastionProtectionVault.sol#130-141) uses timestamp for comparisons
+	Dangerous comparisons:
+	- b.releaseRequestedAt == 0 || block.timestamp < uint256(b.releaseRequestedAt) + RELEASE_DELAY (src/vaults/BastionProtectionVault.sol#132)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: cyclomatic-complexity
+BastionPolicyRegistry._validate(BastionTypes.Policy,address[],address[]) (src/policies/BastionPolicyRegistry.sol#305-334) has a high cyclomatic complexity (16).
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cyclomatic-complexity
+
+Detector: missing-inheritance
+FixtureOracle (src/fixtures/FixtureOracle.sol#10-39) should inherit from ITimestampedPriceSource (src/oracles/OracleRiskAdapter.sol#7-9)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-inheritance
+
+Detector: naming-convention
+Variable AaveV3LendingAdapter.POOL (src/adapters/AaveV3LendingAdapter.sol#30) is not in mixedCase
+Variable AaveV3LendingAdapter.ORACLE (src/adapters/AaveV3LendingAdapter.sol#31) is not in mixedCase
+Variable AaveV3LendingAdapter._PROTOCOL_ID (src/adapters/AaveV3LendingAdapter.sol#32) is not in mixedCase
+Variable BastionCallbackRouter.DEST_CHAIN_ID (src/callbacks/BastionCallbackRouter.sol#23) is not in mixedCase
+Variable BastionCallbackRouter.POLICIES (src/callbacks/BastionCallbackRouter.sol#24) is not in mixedCase
+Variable BastionCallbackRouter.LEDGER (src/callbacks/BastionCallbackRouter.sol#25) is not in mixedCase
+Variable BastionCallbackRouter.RECEIPTS (src/callbacks/BastionCallbackRouter.sol#26) is not in mixedCase
+Variable BastionCallbackRouter.EMERGENCY (src/callbacks/BastionCallbackRouter.sol#27) is not in mixedCase
+Variable FixtureCollateralToken.MARKET (src/fixtures/FixtureLendingMarket.sol#18) is not in mixedCase
+Variable FixtureCollateralToken.UNDERLYING (src/fixtures/FixtureLendingMarket.sol#19) is not in mixedCase
+Variable FixtureDebtToken.MARKET (src/fixtures/FixtureLendingMarket.sol#52) is not in mixedCase
+Variable FixtureDebtToken.UNDERLYING (src/fixtures/FixtureLendingMarket.sol#53) is not in mixedCase
+Variable FixtureLendingMarket.ORACLE (src/fixtures/FixtureLendingMarket.sol#90) is not in mixedCase
+Variable FixtureLendingMarket.FLASHLOAN_PREMIUM_TOTAL (src/fixtures/FixtureLendingMarket.sol#91) is not in mixedCase
+Variable FixtureSwapVenue.ORACLE (src/fixtures/FixtureSwapVenue.sol#19) is not in mixedCase
+Function IAaveV3Pool.FLASHLOAN_PREMIUM_TOTAL() (src/interfaces/IAaveV3.sol#38) is not in mixedCase
+Function IAaveV3Oracle.BASE_CURRENCY_UNIT() (src/interfaces/IAaveV3.sol#43) is not in mixedCase
+Variable BastionRiskObserver.POLICIES (src/oracles/BastionRiskObserver.sol#14) is not in mixedCase
+Variable BastionRiskObserver.MIN_INTERVAL (src/oracles/BastionRiskObserver.sol#15) is not in mixedCase
+Variable OracleRiskAdapter.AUTHORITATIVE (src/oracles/OracleRiskAdapter.sol#30) is not in mixedCase
+Variable BastionExecutorBase.POLICIES (src/rescue/BastionExecutorBase.sol#16) is not in mixedCase
+Variable BastionExecutorBase.LEDGER (src/rescue/BastionExecutorBase.sol#17) is not in mixedCase
+Variable BastionExecutorBase.RECEIPTS (src/rescue/BastionExecutorBase.sol#18) is not in mixedCase
+Variable SolverRescueExecutor.SOLVERS (src/rescue/SolverRescueExecutor.sol#31) is not in mixedCase
+Variable SolverRescueExecutor.LIQUIDITY (src/rescue/SolverRescueExecutor.sol#32) is not in mixedCase
+Variable SolverRescueExecutor.QUOTES (src/rescue/SolverRescueExecutor.sol#33) is not in mixedCase
+Variable CrossChainReserveEscrow.VAULT (src/settlement/CrossChainReserveEscrow.sol#42) is not in mixedCase
+Variable SolverLiquidityVault.REGISTRY (src/solvers/SolverLiquidityVault.sol#33) is not in mixedCase
+Variable SolverLiquidityVault.EMERGENCY (src/solvers/SolverLiquidityVault.sol#34) is not in mixedCase
+Variable SolverQuoteManager.VAULT (src/solvers/SolverQuoteManager.sol#26) is not in mixedCase
+Variable SolverQuoteManager.SOLVERS (src/solvers/SolverQuoteManager.sol#27) is not in mixedCase
+Variable SolverQuoteManager.POLICIES (src/solvers/SolverQuoteManager.sol#28) is not in mixedCase
+Variable SolverRegistry.BOND_TOKEN (src/solvers/SolverRegistry.sol#28) is not in mixedCase
+Variable BastionProtectionVault.EMERGENCY (src/vaults/BastionProtectionVault.sol#36) is not in mixedCase
+Variable BastionProtectionVault.RELEASE_DELAY (src/vaults/BastionProtectionVault.sol#37) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+
+Detector: redundant-statements
+Redundant expression "originChainId (src/callbacks/BastionCallbackRouter.sol#144)" inBastionCallbackRouter (src/callbacks/BastionCallbackRouter.sol#22-223)
+Redundant expression "observedHf (src/callbacks/BastionCallbackRouter.sol#145)" inBastionCallbackRouter (src/callbacks/BastionCallbackRouter.sol#22-223)
+Redundant expression "originEventId (src/reactive/BastionReactiveCore.sol#255)" inBastionReactiveCore (src/reactive/BastionReactiveCore.sol#22-311)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#redundant-statements
+
+Detector: unindexed-event-address
+Event BastionCallbackRouter.ExecutorsSet(address,address) (src/callbacks/BastionCallbackRouter.sol#37) has address parameters but no indexed parameters
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unindexed-event-address-parameters
+
+Detector: cache-array-length
+Loop condition i < reservesList.length (src/fixtures/FixtureLendingMarket.sol#240) should use cached array length instead of referencing `length` member of the storage array.
+ Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cache-array-length
+
+Detector: constable-states
+BastionCallbackRouter.executorGasReserve (src/callbacks/BastionCallbackRouter.sol#32) should be constant 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+. analyzed (70 contracts with 102 detectors), 122 result(s) found
+'forge clean' running (wd: /workspace/projects/bastion-guardian/contracts)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: /workspace/projects/bastion-guardian/contracts)
+EXIT 255

@@ -1,0 +1,337 @@
+
+   • turbo 2.11.13
+   • Packages in scope: @bastion-guardian/api, @bastion-guardian/chain-registry, @bastion-guardian/config, @bastion-guardian/observability, @bastion-guardian/risk-engine, @bastion-guardian/sdk, @bastion-guardian/simulator, @bastion-guardian/types, @bastion-guardian/ui, @bastion-guardian/web
+   • Running lint, typecheck, test, build in 10 packages
+   • Remote caching disabled
+
+@bastion-guardian/types:typecheck: cache bypass, force executing 36db0e6d10ac26fc
+@bastion-guardian/observability:test: cache bypass, force executing 58af6183a62ed257
+@bastion-guardian/observability:lint: cache bypass, force executing 362222f2a088c225
+@bastion-guardian/types:build: cache bypass, force executing 39e2a759dc618447
+@bastion-guardian/config:lint: cache bypass, force executing ebb866646cda992d
+@bastion-guardian/types:test: cache bypass, force executing 563d2eaf6c83c477
+@bastion-guardian/config:test: cache bypass, force executing 4351c24d402b00e0
+@bastion-guardian/config:build: cache bypass, force executing a2d327c175ba3f9d
+@bastion-guardian/types:lint: cache bypass, force executing 31ee0dd9b93ee344
+@bastion-guardian/config:typecheck: cache bypass, force executing 55196c8e08ec6614
+@bastion-guardian/config:typecheck: 
+@bastion-guardian/config:typecheck: > @bastion-guardian/config@0.1.0 typecheck <repo>/packages/config
+@bastion-guardian/config:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/config:typecheck: 
+@bastion-guardian/config:build: 
+@bastion-guardian/config:build: > @bastion-guardian/config@0.1.0 build <repo>/packages/config
+@bastion-guardian/config:build: > tsc -p tsconfig.build.json
+@bastion-guardian/config:build: 
+@bastion-guardian/config:test: 
+@bastion-guardian/config:test: > @bastion-guardian/config@0.1.0 test <repo>/packages/config
+@bastion-guardian/config:test: > vitest run --passWithNoTests
+@bastion-guardian/config:test: 
+@bastion-guardian/config:lint: 
+@bastion-guardian/config:lint: > @bastion-guardian/config@0.1.0 lint <repo>/packages/config
+@bastion-guardian/config:lint: > eslint src
+@bastion-guardian/config:lint: 
+@bastion-guardian/types:lint: 
+@bastion-guardian/types:lint: > @bastion-guardian/types@0.1.0 lint <repo>/packages/types
+@bastion-guardian/types:lint: > eslint src
+@bastion-guardian/types:lint: 
+@bastion-guardian/types:build: 
+@bastion-guardian/types:build: > @bastion-guardian/types@0.1.0 build <repo>/packages/types
+@bastion-guardian/types:build: > tsc -p tsconfig.build.json
+@bastion-guardian/types:build: 
+@bastion-guardian/types:typecheck: 
+@bastion-guardian/types:typecheck: > @bastion-guardian/types@0.1.0 typecheck <repo>/packages/types
+@bastion-guardian/types:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/types:typecheck: 
+@bastion-guardian/types:test: 
+@bastion-guardian/types:test: > @bastion-guardian/types@0.1.0 test <repo>/packages/types
+@bastion-guardian/types:test: > vitest run --passWithNoTests
+@bastion-guardian/types:test: 
+@bastion-guardian/observability:test: 
+@bastion-guardian/observability:test: > @bastion-guardian/observability@0.1.0 test <repo>/packages/observability
+@bastion-guardian/observability:test: > vitest run --passWithNoTests
+@bastion-guardian/observability:test: 
+@bastion-guardian/observability:lint: 
+@bastion-guardian/observability:lint: > @bastion-guardian/observability@0.1.0 lint <repo>/packages/observability
+@bastion-guardian/observability:lint: > eslint src
+@bastion-guardian/observability:lint: 
+@bastion-guardian/observability:test: 
+@bastion-guardian/observability:test:  RUN  v3.2.7 <repo>/packages/observability
+@bastion-guardian/observability:test: 
+@bastion-guardian/types:test: 
+@bastion-guardian/types:test:  RUN  v3.2.7 <repo>/packages/types
+@bastion-guardian/types:test: 
+@bastion-guardian/types:test: No test files found, exiting with code 0
+@bastion-guardian/types:test: 
+@bastion-guardian/types:test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+@bastion-guardian/types:test: exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+@bastion-guardian/types:test: 
+@bastion-guardian/config:test: 
+@bastion-guardian/config:test:  RUN  v3.2.7 <repo>/packages/config
+@bastion-guardian/config:test: 
+@bastion-guardian/observability:typecheck: cache bypass, force executing 9e978a66f9d91f67
+@bastion-guardian/observability:test:  ✓ test/logger.test.ts (1 test) 4ms
+@bastion-guardian/observability:test: 
+@bastion-guardian/observability:test:  Test Files  1 passed (1)
+@bastion-guardian/observability:test:       Tests  1 passed (1)
+@bastion-guardian/observability:test:    Start at  13:29:11
+@bastion-guardian/observability:test:    Duration  685ms (transform 104ms, setup 0ms, collect 113ms, tests 4ms, environment 0ms, prepare 209ms)
+@bastion-guardian/observability:test: 
+@bastion-guardian/observability:build: cache bypass, force executing 11a25bb12eb7bb14
+@bastion-guardian/config:test:  ✓ test/env.test.ts (3 tests) 9ms
+@bastion-guardian/config:test: 
+@bastion-guardian/config:test:  Test Files  1 passed (1)
+@bastion-guardian/config:test:       Tests  3 passed (3)
+@bastion-guardian/config:test:    Start at  13:29:11
+@bastion-guardian/config:test:    Duration  757ms (transform 113ms, setup 0ms, collect 158ms, tests 9ms, environment 0ms, prepare 137ms)
+@bastion-guardian/config:test: 
+@bastion-guardian/observability:typecheck: 
+@bastion-guardian/observability:typecheck: > @bastion-guardian/observability@0.1.0 typecheck <repo>/packages/observability
+@bastion-guardian/observability:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/observability:typecheck: 
+@bastion-guardian/ui:test: cache bypass, force executing 878a49e3a9985bb4
+@bastion-guardian/ui:lint: cache bypass, force executing 562555688d4d770c
+@bastion-guardian/ui:typecheck: cache bypass, force executing 6bde901d6fe94cb8
+@bastion-guardian/chain-registry:build: cache bypass, force executing a783e88a2950d9fd
+@bastion-guardian/risk-engine:test: cache bypass, force executing 096d036ad00791b9
+@bastion-guardian/chain-registry:test: cache bypass, force executing 85663a73bd0cd280
+@bastion-guardian/risk-engine:build: cache bypass, force executing 6a131e46d42c2b67
+@bastion-guardian/chain-registry:typecheck: cache bypass, force executing fcd7684a549901d5
+@bastion-guardian/observability:build: 
+@bastion-guardian/observability:build: > @bastion-guardian/observability@0.1.0 build <repo>/packages/observability
+@bastion-guardian/observability:build: > tsc -p tsconfig.build.json
+@bastion-guardian/observability:build: 
+@bastion-guardian/ui:test: 
+@bastion-guardian/ui:test: > @bastion-guardian/ui@0.1.0 test <repo>/packages/ui
+@bastion-guardian/ui:test: > vitest run --passWithNoTests
+@bastion-guardian/ui:test: 
+@bastion-guardian/chain-registry:build: 
+@bastion-guardian/chain-registry:build: > @bastion-guardian/chain-registry@0.1.0 build <repo>/packages/chain-registry
+@bastion-guardian/chain-registry:build: > tsc -p tsconfig.build.json
+@bastion-guardian/chain-registry:build: 
+@bastion-guardian/ui:typecheck: 
+@bastion-guardian/ui:typecheck: > @bastion-guardian/ui@0.1.0 typecheck <repo>/packages/ui
+@bastion-guardian/ui:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/ui:typecheck: 
+@bastion-guardian/risk-engine:build: 
+@bastion-guardian/risk-engine:build: > @bastion-guardian/risk-engine@0.1.0 build <repo>/packages/risk-engine
+@bastion-guardian/risk-engine:build: > tsc -p tsconfig.build.json
+@bastion-guardian/risk-engine:build: 
+@bastion-guardian/ui:lint: 
+@bastion-guardian/ui:lint: > @bastion-guardian/ui@0.1.0 lint <repo>/packages/ui
+@bastion-guardian/ui:lint: > eslint src
+@bastion-guardian/ui:lint: 
+@bastion-guardian/risk-engine:test: 
+@bastion-guardian/risk-engine:test: > @bastion-guardian/risk-engine@0.1.0 test <repo>/packages/risk-engine
+@bastion-guardian/risk-engine:test: > vitest run --passWithNoTests
+@bastion-guardian/risk-engine:test: 
+@bastion-guardian/chain-registry:test: 
+@bastion-guardian/chain-registry:test: > @bastion-guardian/chain-registry@0.1.0 test <repo>/packages/chain-registry
+@bastion-guardian/chain-registry:test: > vitest run --passWithNoTests
+@bastion-guardian/chain-registry:test: 
+@bastion-guardian/chain-registry:typecheck: 
+@bastion-guardian/chain-registry:typecheck: > @bastion-guardian/chain-registry@0.1.0 typecheck <repo>/packages/chain-registry
+@bastion-guardian/chain-registry:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/chain-registry:typecheck: 
+@bastion-guardian/ui:test: 
+@bastion-guardian/ui:test:  RUN  v3.2.7 <repo>/packages/ui
+@bastion-guardian/ui:test: 
+@bastion-guardian/chain-registry:test: 
+@bastion-guardian/chain-registry:test:  RUN  v3.2.7 <repo>/packages/chain-registry
+@bastion-guardian/chain-registry:test: 
+@bastion-guardian/ui:test:  ✓ test/tokens.test.ts (1 test) 2ms
+@bastion-guardian/ui:test: 
+@bastion-guardian/ui:test:  Test Files  1 passed (1)
+@bastion-guardian/ui:test:       Tests  1 passed (1)
+@bastion-guardian/ui:test:    Start at  13:29:13
+@bastion-guardian/ui:test:    Duration  494ms (transform 134ms, setup 0ms, collect 99ms, tests 2ms, environment 0ms, prepare 161ms)
+@bastion-guardian/ui:test: 
+@bastion-guardian/ui:build: cache bypass, force executing f984fdeea82fd414
+@bastion-guardian/risk-engine:test: 
+@bastion-guardian/risk-engine:test:  RUN  v3.2.7 <repo>/packages/risk-engine
+@bastion-guardian/risk-engine:test: 
+@bastion-guardian/risk-engine:lint: cache bypass, force executing bd2b657d46fbd931
+@bastion-guardian/risk-engine:typecheck: cache bypass, force executing 229ef3b6043a95f3
+@bastion-guardian/chain-registry:test:  ✓ test/registry.test.ts (5 tests) 23ms
+@bastion-guardian/chain-registry:test: 
+@bastion-guardian/chain-registry:test:  Test Files  1 passed (1)
+@bastion-guardian/chain-registry:test:       Tests  5 passed (5)
+@bastion-guardian/chain-registry:test:    Start at  13:29:13
+@bastion-guardian/chain-registry:test:    Duration  627ms (transform 147ms, setup 0ms, collect 157ms, tests 23ms, environment 0ms, prepare 164ms)
+@bastion-guardian/chain-registry:test: 
+@bastion-guardian/chain-registry:lint: cache bypass, force executing 29facf88929157d8
+@bastion-guardian/risk-engine:test:  ✓ test/readiness.test.ts (6 tests) 15ms
+@bastion-guardian/ui:build: 
+@bastion-guardian/ui:build: > @bastion-guardian/ui@0.1.0 build <repo>/packages/ui
+@bastion-guardian/ui:build: > tsc -p tsconfig.build.json
+@bastion-guardian/ui:build: 
+@bastion-guardian/sdk:typecheck: cache bypass, force executing 7835b37b207dea31
+@bastion-guardian/sdk:test: cache bypass, force executing c21ced66be78c041
+@bastion-guardian/sdk:build: cache bypass, force executing 95afbbbc5d950226
+@bastion-guardian/risk-engine:typecheck: 
+@bastion-guardian/risk-engine:typecheck: > @bastion-guardian/risk-engine@0.1.0 typecheck <repo>/packages/risk-engine
+@bastion-guardian/risk-engine:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/risk-engine:typecheck: 
+@bastion-guardian/risk-engine:test:  ✓ test/math.test.ts (7 tests) 138ms
+@bastion-guardian/risk-engine:test: 
+@bastion-guardian/risk-engine:test:  Test Files  2 passed (2)
+@bastion-guardian/risk-engine:test:       Tests  13 passed (13)
+@bastion-guardian/risk-engine:test:    Start at  13:29:14
+@bastion-guardian/risk-engine:test:    Duration  754ms (transform 171ms, setup 0ms, collect 259ms, tests 153ms, environment 0ms, prepare 330ms)
+@bastion-guardian/risk-engine:test: 
+@bastion-guardian/risk-engine:lint: 
+@bastion-guardian/risk-engine:lint: > @bastion-guardian/risk-engine@0.1.0 lint <repo>/packages/risk-engine
+@bastion-guardian/risk-engine:lint: > eslint src
+@bastion-guardian/risk-engine:lint: 
+@bastion-guardian/sdk:lint: cache bypass, force executing 74626bc19717dd7d
+@bastion-guardian/chain-registry:lint: 
+@bastion-guardian/chain-registry:lint: > @bastion-guardian/chain-registry@0.1.0 lint <repo>/packages/chain-registry
+@bastion-guardian/chain-registry:lint: > eslint src
+@bastion-guardian/chain-registry:lint: 
+@bastion-guardian/simulator:typecheck: cache bypass, force executing e78ff0a0f1bebc8f
+@bastion-guardian/sdk:typecheck: 
+@bastion-guardian/sdk:typecheck: > @bastion-guardian/sdk@0.1.0 typecheck <repo>/packages/sdk
+@bastion-guardian/sdk:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/sdk:typecheck: 
+@bastion-guardian/sdk:test: 
+@bastion-guardian/sdk:test: > @bastion-guardian/sdk@0.1.0 test <repo>/packages/sdk
+@bastion-guardian/sdk:test: > vitest run --passWithNoTests
+@bastion-guardian/sdk:test: 
+@bastion-guardian/simulator:lint: cache bypass, force executing 3e7f14b1e85e549f
+@bastion-guardian/sdk:lint: 
+@bastion-guardian/sdk:lint: > @bastion-guardian/sdk@0.1.0 lint <repo>/packages/sdk
+@bastion-guardian/sdk:lint: > eslint src
+@bastion-guardian/sdk:lint: 
+@bastion-guardian/sdk:build: 
+@bastion-guardian/sdk:build: > @bastion-guardian/sdk@0.1.0 build <repo>/packages/sdk
+@bastion-guardian/sdk:build: > tsc -p tsconfig.build.json
+@bastion-guardian/sdk:build: 
+@bastion-guardian/sdk:test: 
+@bastion-guardian/sdk:test:  RUN  v3.2.7 <repo>/packages/sdk
+@bastion-guardian/sdk:test: 
+@bastion-guardian/simulator:typecheck: 
+@bastion-guardian/simulator:typecheck: > @bastion-guardian/simulator@0.1.0 typecheck <repo>/packages/simulator
+@bastion-guardian/simulator:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/simulator:typecheck: 
+@bastion-guardian/simulator:lint: 
+@bastion-guardian/simulator:lint: > @bastion-guardian/simulator@0.1.0 lint <repo>/packages/simulator
+@bastion-guardian/simulator:lint: > eslint src
+@bastion-guardian/simulator:lint: 
+@bastion-guardian/simulator:test: cache bypass, force executing f4e3b9a906f8334b
+@bastion-guardian/simulator:build: cache bypass, force executing 2096c3f9d8e96030
+@bastion-guardian/web:lint: cache bypass, force executing fa55737f6e724df4
+@bastion-guardian/web:typecheck: cache bypass, force executing aa4a4c05d2c7b60c
+@bastion-guardian/sdk:test:  ✓ test/policy.test.ts (2 tests) 29ms
+@bastion-guardian/sdk:test: 
+@bastion-guardian/sdk:test:  Test Files  1 passed (1)
+@bastion-guardian/sdk:test:       Tests  2 passed (2)
+@bastion-guardian/sdk:test:    Start at  13:29:15
+@bastion-guardian/sdk:test:    Duration  849ms (transform 150ms, setup 0ms, collect 381ms, tests 29ms, environment 0ms, prepare 99ms)
+@bastion-guardian/sdk:test: 
+@bastion-guardian/simulator:test: 
+@bastion-guardian/simulator:test: > @bastion-guardian/simulator@0.1.0 test <repo>/packages/simulator
+@bastion-guardian/simulator:test: > vitest run --passWithNoTests
+@bastion-guardian/simulator:test: 
+@bastion-guardian/simulator:build: 
+@bastion-guardian/simulator:build: > @bastion-guardian/simulator@0.1.0 build <repo>/packages/simulator
+@bastion-guardian/simulator:build: > tsc -p tsconfig.build.json
+@bastion-guardian/simulator:build: 
+@bastion-guardian/web:test: cache bypass, force executing 27d8c1c965b5df77
+@bastion-guardian/web:build: cache bypass, force executing 61221f4d6ba8e18a
+@bastion-guardian/web:typecheck: 
+@bastion-guardian/web:typecheck: > @bastion-guardian/web@0.1.0 typecheck <repo>/apps/web
+@bastion-guardian/web:typecheck: > tsc --noEmit
+@bastion-guardian/web:typecheck: 
+@bastion-guardian/web:lint: 
+@bastion-guardian/web:lint: > @bastion-guardian/web@0.1.0 lint <repo>/apps/web
+@bastion-guardian/web:lint: > eslint app
+@bastion-guardian/web:lint: 
+@bastion-guardian/simulator:test: 
+@bastion-guardian/simulator:test:  RUN  v3.2.7 <repo>/packages/simulator
+@bastion-guardian/simulator:test: 
+@bastion-guardian/web:test: 
+@bastion-guardian/web:test: > @bastion-guardian/web@0.1.0 test <repo>/apps/web
+@bastion-guardian/web:test: > vitest run --passWithNoTests
+@bastion-guardian/web:test: 
+@bastion-guardian/simulator:test:  ✓ test/simulator.test.ts (4 tests) 8ms
+@bastion-guardian/simulator:test: 
+@bastion-guardian/simulator:test:  Test Files  1 passed (1)
+@bastion-guardian/simulator:test:       Tests  4 passed (4)
+@bastion-guardian/simulator:test:    Start at  13:29:16
+@bastion-guardian/simulator:test:    Duration  577ms (transform 158ms, setup 0ms, collect 155ms, tests 8ms, environment 0ms, prepare 174ms)
+@bastion-guardian/simulator:test: 
+@bastion-guardian/web:build: 
+@bastion-guardian/web:build: > @bastion-guardian/web@0.1.0 build <repo>/apps/web
+@bastion-guardian/web:build: > next build
+@bastion-guardian/web:build: 
+@bastion-guardian/web:test: 
+@bastion-guardian/web:test:  RUN  v3.2.7 <repo>/apps/web
+@bastion-guardian/web:test: 
+@bastion-guardian/web:test: No test files found, exiting with code 0
+@bastion-guardian/web:test: 
+@bastion-guardian/web:test: include: **/*.{test,spec}.?(c|m)[jt]s?(x)
+@bastion-guardian/web:test: exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+@bastion-guardian/web:test: 
+@bastion-guardian/api:typecheck: cache bypass, force executing 0a7805217750dc34
+@bastion-guardian/api:build: cache bypass, force executing 469f9aedd29b6390
+@bastion-guardian/api:test: cache bypass, force executing f350c29b3278b9d4
+@bastion-guardian/api:lint: cache bypass, force executing a32bf9ea0bc394f4
+@bastion-guardian/web:build: ▲ Next.js 16.4.6 (Turbopack)
+@bastion-guardian/web:build: ✓ Running next.config.ts took 40ms
+@bastion-guardian/web:build: 
+@bastion-guardian/web:build:   Creating an optimized production build ...
+@bastion-guardian/api:typecheck: 
+@bastion-guardian/api:typecheck: > @bastion-guardian/api@0.1.0 typecheck <repo>/apps/api
+@bastion-guardian/api:typecheck: > tsc -p tsconfig.json --noEmit
+@bastion-guardian/api:typecheck: 
+@bastion-guardian/api:build: 
+@bastion-guardian/api:build: > @bastion-guardian/api@0.1.0 build <repo>/apps/api
+@bastion-guardian/api:build: > tsc -p tsconfig.build.json
+@bastion-guardian/api:build: 
+@bastion-guardian/api:test: 
+@bastion-guardian/api:test: > @bastion-guardian/api@0.1.0 test <repo>/apps/api
+@bastion-guardian/api:test: > vitest run
+@bastion-guardian/api:test: 
+@bastion-guardian/api:lint: 
+@bastion-guardian/api:lint: > @bastion-guardian/api@0.1.0 lint <repo>/apps/api
+@bastion-guardian/api:lint: > eslint src test
+@bastion-guardian/api:lint: 
+@bastion-guardian/web:build: ✓ Compiled successfully in 367ms
+@bastion-guardian/web:build:   Running TypeScript ...
+@bastion-guardian/api:test: 
+@bastion-guardian/api:test:  RUN  v3.2.7 <repo>/apps/api
+@bastion-guardian/api:test: 
+@bastion-guardian/api:test:  ✓ test/api.test.ts (5 tests) 64ms
+@bastion-guardian/api:test: 
+@bastion-guardian/api:test:  Test Files  1 passed (1)
+@bastion-guardian/api:test:       Tests  5 passed (5)
+@bastion-guardian/api:test:    Start at  13:29:18
+@bastion-guardian/api:test:    Duration  616ms (transform 113ms, setup 0ms, collect 260ms, tests 64ms, environment 0ms, prepare 118ms)
+@bastion-guardian/api:test: 
+@bastion-guardian/web:build:   Finished TypeScript in 1171ms ...
+@bastion-guardian/web:build:   Collecting page data using 5 workers ...
+@bastion-guardian/web:build:   Generating static pages using 5 workers (0/4) ...
+@bastion-guardian/web:build:   Generating static pages using 5 workers (1/4) 
+@bastion-guardian/web:build:   Generating static pages using 5 workers (2/4) 
+@bastion-guardian/web:build:   Generating static pages using 5 workers (3/4) 
+@bastion-guardian/web:build: ✓ Generating static pages using 5 workers (4/4) in 304ms
+@bastion-guardian/web:build:   Finalizing page optimization ...
+@bastion-guardian/web:build: 
+@bastion-guardian/web:build: Route (app)
+@bastion-guardian/web:build: ┌ ○ /
+@bastion-guardian/web:build: ├ ○ /_not-found
+@bastion-guardian/web:build: └ ○ /status
+@bastion-guardian/web:build: 
+@bastion-guardian/web:build: 
+@bastion-guardian/web:build: ○  (Static)  prerendered as static content
+@bastion-guardian/web:build: 
+
+ Tasks:    40 successful, 40 total
+Cached:    0 cached, 40 total
+  Time:    9.795s 
+
+
+> bastion-guardian@0.1.0 format:check <repo>
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
