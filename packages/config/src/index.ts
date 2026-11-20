@@ -21,6 +21,16 @@ export const EnvSchema = z.object({
     .transform(() => false as const),
   ENABLE_LIVE_EXECUTION: bool.default(false),
   SESSION_SECRET: z.string().min(32).optional(),
+  /** SIWE: the exact domain (host[:port]) the web app serves from; messages for any other domain are rejected. */
+  SIWE_DOMAIN: z.string().default("localhost:3000"),
+  SESSION_TTL_HOURS: z.coerce.number().int().min(1).max(168).default(12),
+  /** Secure cookies; forced on in production. */
+  COOKIE_SECURE: bool.default(false),
+  /** Comma-separated wallet addresses granted the admin role at sign-in (operators only). */
+  ADMIN_ADDRESSES: z.string().default(""),
+  /** LOCAL SIMULATION wiring for solver endpoints (anvil). */
+  LOCAL_RPC_URL: z.string().url().optional(),
+  LOCAL_ADDRESSES: z.string().optional(),
 });
 export type Env = z.infer<typeof EnvSchema>;
 

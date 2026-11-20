@@ -19,6 +19,9 @@ import { BastionEmergencyControl } from "../governance/BastionEmergencyControl.s
 ///      Releasing a budget back to free balance is delayed by `releaseDelay` so solvers that already repaid debt in
 ///      reliance on that budget have time to settle (the `ReleaseRequested` event is their warning signal).
 ///      Pausing a budget blocks reimbursement for rescues executed after the pause, preserving earlier obligations.
+///      R-07: budgets are keyed by `(owner, policyId)`. Nobody can pre-create (squat) another user's budget slot, and
+///      the settler must name the policy owner reported by the destination executor (read from the destination
+///      BastionPolicyRegistry), so a reimbursement can only debit the budget of the user who signed that policy.
 contract BastionProtectionVault is Ownable2Step, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -39,7 +42,7 @@ contract BastionProtectionVault is Ownable2Step, ReentrancyGuard {
     mapping(address => bool) public isSupportedToken;
     mapping(address => bool) public isSettler;
     mapping(address => mapping(address => uint256)) public freeBalance; // user => token => amount
-    mapping(bytes32 => Budget) private _budgets;
+    mapping(bytes32 => Budget) private _budgets; // budgetKey(owner, policyId) => budget
     mapping(address => uint256) public totalHeld; // token => sum(free + budgets) for solvency checks
 
     event TokenSupported(address indexed token, bool supported);
@@ -102,7 +105,7 @@ contract BastionProtectionVault is Ownable2Step, ReentrancyGuard {
     function allocate(bytes32 policyId, address token, uint256 repayAmount, uint256 feeAmount, uint16 maxFeeBps)
         external
     {
-        Budget storage b = _budgets[policyId];
+        Budget storage b = _budgets[budgetKey(msg.sender, policyId)];
         if (b.owner == address(0)) {
             b.owner = msg.sender;
             b.token = token;
@@ -161,14 +164,19 @@ contract BastionProtectionVault is Ownable2Step, ReentrancyGuard {
 
     /// @notice Debits a policy budget to reimburse a verified solver claim.
     /// @param executedAt Destination execution timestamp (rescues executed after a budget pause are rejected).
-    function settle(bytes32 policyId, address recipient, uint256 principal, uint256 fee, uint64 executedAt)
-        external
-        nonReentrant
-    {
+    /// @param policyOwner Owner of the destination policy (reported by the trusted destination executor).
+    function settle(
+        bytes32 policyId,
+        address policyOwner,
+        address recipient,
+        uint256 principal,
+        uint256 fee,
+        uint64 executedAt
+    ) external nonReentrant {
         if (!isSettler[msg.sender]) revert BastionErrors.Unauthorized(msg.sender);
         EMERGENCY.requireNotPaused(BastionTypes.SCOPE_SETTLEMENT);
         if (recipient == address(0)) revert BastionErrors.ZeroAddress();
-        Budget storage b = _budgets[policyId];
+        Budget storage b = _budgets[budgetKey(policyOwner, policyId)];
         if (b.owner == address(0)) revert BastionErrors.InvalidParameter("NO_BUDGET");
         if (b.pausedAt != 0 && executedAt > b.pausedAt) revert BastionErrors.PolicyNotActive(policyId);
         if (principal == 0) revert BastionErrors.NoEconomicEffect();
@@ -187,12 +195,16 @@ contract BastionProtectionVault is Ownable2Step, ReentrancyGuard {
 
     // ------------------------------------------------------------------ views
 
-    function getBudget(bytes32 policyId) external view returns (Budget memory) {
-        return _budgets[policyId];
+    function getBudget(address owner_, bytes32 policyId) external view returns (Budget memory) {
+        return _budgets[budgetKey(owner_, policyId)];
+    }
+
+    function budgetKey(address owner_, bytes32 policyId) public pure returns (bytes32) {
+        return keccak256(abi.encode(owner_, policyId));
     }
 
     function _owned(bytes32 policyId) internal view returns (Budget storage b) {
-        b = _budgets[policyId];
+        b = _budgets[budgetKey(msg.sender, policyId)];
         if (b.owner != msg.sender) revert BastionErrors.Unauthorized(msg.sender);
     }
 }

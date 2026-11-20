@@ -34,12 +34,44 @@ jobs:
         run: forge test -vv
         env:
           FOUNDRY_PROFILE: ci
+      - name: Simulator vectors are in sync with the contracts
+        working-directory: .
+        run: diff -u packages/simulator/test/fixtures/foundry-vectors.json contracts/out-evidence/vectors/foundry-vectors.json
 
   typescript:
     name: TypeScript (lint, typecheck, test, build)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_USER: bastion
+          POSTGRES_PASSWORD: bastion_local_only
+          POSTGRES_DB: bastion
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U bastion -d bastion" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7.4-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgresql://bastion:bastion_local_only@127.0.0.1:5432/bastion
+      TEST_REDIS_URL: redis://127.0.0.1:6379
+      # Integration suites must not silently skip in CI.
+      REQUIRE_INTEGRATION_INFRA: "true"
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      # Service integration tests boot a private anvil preloaded with the real contracts (LOCAL SIMULATION).
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.9.0
+      - name: Build contracts for local-stack integration tests
+        working-directory: contracts
+        run: forge build
       - uses: pnpm/action-setup@v4
         with:
           version: 10.34.6
@@ -53,3 +85,11 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Install Playwright Chromium
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Playwright E2E (web + API + anvil LOCAL SIMULATION + Postgres + Redis)
+        working-directory: apps/web
+        run: pnpm test:e2e
+      - name: Local end-to-end script
+        run: bash contracts/script/local-e2e.sh

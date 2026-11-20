@@ -66,6 +66,31 @@ contract FlashRescueTest is BastionTestBase {
         assertEq(uint8(ledger.stateOf(rescueId)), uint8(RescueSettlementLedger.State.DestinationExecuted));
     }
 
+    /// R-02: an account-set pull cap bounds operator pulls even under an unlimited aToken approval.
+    function test_accountPullCapBoundsCollateralPulls() public {
+        _authorizeCollateral(type(uint256).max);
+        vm.prank(borrower);
+        adapter.setCollateralPullCap(address(weth), 0.1e18, true);
+        _crash(1800e8);
+        (bool feasible, bytes32 reason) = flashExec.isFeasible(policyId);
+        assertFalse(feasible);
+        assertEq(reason, bytes32("COLLATERAL_NOT_AUTHORIZED"));
+        vm.prank(address(flashExec));
+        vm.expectRevert();
+        adapter.withdrawCollateralFor(borrower, address(weth), 0.2e18, address(flashExec));
+        // Raising the cap restores feasibility, and a successful rescue decrements the remaining cap.
+        vm.prank(borrower);
+        adapter.setCollateralPullCap(address(weth), 5e18, true);
+        (feasible,) = flashExec.isFeasible(policyId);
+        assertTrue(feasible);
+        uint256 collBefore = adapter.getCollateral(borrower, address(weth));
+        vm.prank(borrower);
+        router.requestManualRescue(policyId);
+        uint256 pulled = collBefore - adapter.getCollateral(borrower, address(weth));
+        assertGt(pulled, 0);
+        assertEq(adapter.collateralPullAllowance(borrower, address(weth)), 5e18 - pulled);
+    }
+
     function test_noCollateralAuthorizationMeansUnavailable() public {
         _crash(1800e8);
         (bool feasible, bytes32 reason) = flashExec.isFeasible(policyId);

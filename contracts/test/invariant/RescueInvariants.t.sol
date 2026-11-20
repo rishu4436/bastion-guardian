@@ -239,7 +239,7 @@ contract RescueInvariantsTest is BastionTestBase {
         }
         uint256 paid = reserveUsdc.balanceOf(solverPayout) + reserveUsdc.balanceOf(payout2);
         assertEq(paid, claimed, "payouts == reimbursed claims");
-        assertEq(vault.getBudget(policyId).totalReimbursed, claimed);
+        assertEq(vault.getBudget(borrower, policyId).totalReimbursed, claimed);
     }
 
     /// I4: vault accounting is fully backed — every free and budgeted unit exists in the vault.

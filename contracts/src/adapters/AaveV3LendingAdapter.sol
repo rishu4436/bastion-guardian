@@ -32,9 +32,16 @@ contract AaveV3LendingAdapter is IBastionLendingAdapter, Ownable2Step, Reentranc
     bytes32 private immutable _PROTOCOL_ID;
 
     mapping(address => bool) public isCollateralOperator;
+    /// @dev R-02: optional per-account, per-asset cumulative cap on collateral pulls, set by the account itself.
+    ///      When `pullCapEnabled[account]` is true every pull must fit in (and decrements) the remaining allowance,
+    ///      independently of how large the aToken approval is. Accounts that never opt in rely on their bounded
+    ///      aToken approval alone (the UI recommends bounded approvals and opting in).
+    mapping(address => bool) public pullCapEnabled;
+    mapping(address => mapping(address => uint256)) public collateralPullAllowance; // account => asset => remaining
 
     event CollateralOperatorSet(address indexed operator, bool enabled);
     event RepaidOnBehalf(address indexed payer, address indexed account, address indexed asset, uint256 repaid);
+    event CollateralPullCapSet(address indexed account, address indexed asset, uint256 allowance, bool enabled);
     event CollateralWithdrawnFor(
         address indexed operator, address indexed account, address indexed asset, uint256 amount, address to
     );
@@ -153,7 +160,12 @@ contract AaveV3LendingAdapter is IBastionLendingAdapter, Ownable2Step, Reentranc
         if (aToken == address(0)) return 0;
         uint256 allowance = IERC20(aToken).allowance(account, address(this));
         uint256 bal = IERC20(aToken).balanceOf(account);
-        return allowance < bal ? allowance : bal;
+        uint256 usable = allowance < bal ? allowance : bal;
+        if (pullCapEnabled[account]) {
+            uint256 cap = collateralPullAllowance[account][collateralAsset];
+            if (cap < usable) usable = cap;
+        }
+        return usable;
     }
 
     function flashLender() external view returns (address) {
@@ -189,6 +201,14 @@ contract AaveV3LendingAdapter is IBastionLendingAdapter, Ownable2Step, Reentranc
         emit RepaidOnBehalf(msg.sender, account, debtAsset, repaid);
     }
 
+    /// @notice Account-controlled cap on cumulative collateral pulls by operators (R-02). Setting `enabled = false`
+    ///         removes the extra cap; the aToken approval remains the protocol-native authorization in both cases.
+    function setCollateralPullCap(address asset, uint256 allowance, bool enabled) external {
+        pullCapEnabled[msg.sender] = enabled;
+        collateralPullAllowance[msg.sender][asset] = allowance;
+        emit CollateralPullCapSet(msg.sender, asset, allowance, enabled);
+    }
+
     /// @inheritdoc IBastionLendingAdapter
     function withdrawCollateralFor(address account, address collateralAsset, uint256 amount, address to)
         external
@@ -196,6 +216,11 @@ contract AaveV3LendingAdapter is IBastionLendingAdapter, Ownable2Step, Reentranc
         returns (uint256 withdrawn)
     {
         if (!isCollateralOperator[msg.sender]) revert BastionErrors.Unauthorized(msg.sender);
+        if (pullCapEnabled[account]) {
+            uint256 remaining = collateralPullAllowance[account][collateralAsset];
+            if (amount > remaining) revert BastionErrors.InsufficientBalance(amount, remaining);
+            collateralPullAllowance[account][collateralAsset] = remaining - amount;
+        }
         address aToken = POOL.getReserveAToken(collateralAsset);
         if (aToken == address(0)) revert BastionErrors.CollateralManagementUnavailable();
         // Protocol-native authorization: fails unless `account` approved this adapter on its aToken.

@@ -28,6 +28,7 @@ contract CrossChainReserveEscrow is AbstractCallback, Ownable2Step, ReentrancyGu
     struct Claim {
         SettlementState state;
         bytes32 policyId;
+        address policyOwner;
         uint256 destChainId;
         address destExecutor;
         address recipient;
@@ -75,6 +76,7 @@ contract CrossChainReserveEscrow is AbstractCallback, Ownable2Step, ReentrancyGu
         address rvm,
         bytes32 rescueId,
         bytes32 policyId,
+        address policyOwner,
         uint256 destChainId,
         address destExecutor,
         address recipient,
@@ -93,6 +95,7 @@ contract CrossChainReserveEscrow is AbstractCallback, Ownable2Step, ReentrancyGu
             return;
         }
         c.policyId = policyId;
+        c.policyOwner = policyOwner;
         c.destChainId = destChainId;
         c.destExecutor = destExecutor;
         c.recipient = recipient;
@@ -132,7 +135,7 @@ contract CrossChainReserveEscrow is AbstractCallback, Ownable2Step, ReentrancyGu
         c.attempts += 1;
         c.state = SettlementState.Reimbursed;
         if (wasRecovery) pendingRecovery -= 1;
-        try VAULT.settle(c.policyId, c.recipient, c.principal, c.fee, c.executedAt) {
+        try VAULT.settle(c.policyId, c.policyOwner, c.recipient, c.principal, c.fee, c.executedAt) {
             c.lastError = 0;
             emit ReimbursementCompleted(rescueId, c.policyId, c.recipient, c.principal, c.fee);
         } catch (bytes memory err) {

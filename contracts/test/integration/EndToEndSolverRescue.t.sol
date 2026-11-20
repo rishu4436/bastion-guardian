@@ -178,10 +178,11 @@ contract EndToEndSolverRescueTest is BastionTestBase {
 
     function test_forgedSettlementToEscrowRejected() public {
         bytes memory payload = abi.encodeWithSignature(
-            "settleRescue(address,bytes32,bytes32,uint256,address,address,uint256,uint256,uint64,bytes32)",
+            "settleRescue(address,bytes32,bytes32,address,uint256,address,address,uint256,uint256,uint64,bytes32)",
             address(0),
             bytes32("r"),
             policyId,
+            borrower,
             BASE_SEPOLIA,
             address(solverExec),
             attacker,
@@ -196,16 +197,17 @@ contract EndToEndSolverRescueTest is BastionTestBase {
         vm.prank(attacker);
         vm.expectRevert();
         escrow.settleRescue(
-            address(core), bytes32("r"), policyId, BASE_SEPOLIA, address(solverExec), attacker, 1, 0, 0, 0
+            address(core), bytes32("r"), policyId, borrower, BASE_SEPOLIA, address(solverExec), attacker, 1, 0, 0, 0
         );
     }
 
     function test_untrustedDestinationExecutorRejectedByEscrow() public {
         bytes memory payload = abi.encodeWithSignature(
-            "settleRescue(address,bytes32,bytes32,uint256,address,address,uint256,uint256,uint64,bytes32)",
+            "settleRescue(address,bytes32,bytes32,address,uint256,address,address,uint256,uint256,uint64,bytes32)",
             address(0),
             bytes32("r"),
             policyId,
+            borrower,
             BASE_SEPOLIA,
             attacker,
             attacker,

@@ -37,6 +37,7 @@ contract SolverRescueExecutor is BastionExecutorBase, IBastionExecutor {
         bytes32 indexed policyId,
         address indexed solver,
         address payout,
+        address policyOwner,
         uint256 principal,
         uint256 fee,
         uint64 executedAt,
@@ -139,7 +140,15 @@ contract SolverRescueExecutor is BastionExecutorBase, IBastionExecutor {
         LEDGER.recordSolverExecution(req.rescueId, best.solver, payout, r.repaid, r.fee);
         _receipt(req, p, adapter, r, p.destChainId);
         emit SolverRescueExecuted(
-            req.rescueId, req.policyId, best.solver, payout, r.repaid, r.fee, uint64(block.timestamp), req.originEventId
+            req.rescueId,
+            req.policyId,
+            best.solver,
+            payout,
+            p.owner,
+            r.repaid,
+            r.fee,
+            uint64(block.timestamp),
+            req.originEventId
         );
     }
 }

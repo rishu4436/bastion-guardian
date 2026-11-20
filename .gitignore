@@ -10,10 +10,15 @@ coverage/
 # Foundry
 contracts/out/
 contracts/cache/
-contracts/broadcast/*/31337/
+# Forge broadcast/dry-run records are local artefacts; real deployment evidence is curated into evidence/deployments
+contracts/broadcast/
 contracts/out-evidence/
 # Keys — never commit
 *.key
 *.pem
 keystore/
 .DS_Store
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/

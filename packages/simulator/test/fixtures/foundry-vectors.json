@@ -1,0 +1,90 @@
+{
+  "1000_flash": {
+    "borrowerUsdcWallet": 13112560361,
+    "collateralAfter": 6234698637633333333,
+    "debtAfter": 6358671202,
+    "hfAfter": 1500170179041520442,
+    "hfAfterShock": 1176923076923076923,
+    "path": "flash",
+    "reason": "",
+    "shockBps": 1000,
+    "success": true
+  },
+  "1000_solver": {
+    "borrowerUsdcWallet": 13000000000,
+    "collateralAfter": 10000000000000000000,
+    "debtAfter": 10199989800,
+    "hfAfter": 1500001500001500001,
+    "hfAfterShock": 1176923076923076923,
+    "path": "solver",
+    "reason": "",
+    "shockBps": 1000,
+    "success": true
+  },
+  "2000_flash": {
+    "borrowerUsdcWallet": 13000000000,
+    "collateralAfter": 10000000000000000000,
+    "debtAfter": 13000000000,
+    "hfAfter": 1046153846153846153,
+    "hfAfterShock": 1046153846153846153,
+    "path": "flash",
+    "reason": "BUDGET_BELOW_REQUIRED",
+    "shockBps": 2000,
+    "success": false
+  },
+  "2000_solver": {
+    "borrowerUsdcWallet": 13000000000,
+    "collateralAfter": 10000000000000000000,
+    "debtAfter": 9066657600,
+    "hfAfter": 1500001500001500001,
+    "hfAfterShock": 1046153846153846153,
+    "path": "solver",
+    "reason": "",
+    "shockBps": 2000,
+    "success": true
+  },
+  "4000_flash": {
+    "borrowerUsdcWallet": 13000000000,
+    "collateralAfter": 10000000000000000000,
+    "debtAfter": 13000000000,
+    "hfAfter": 784615384615384615,
+    "hfAfterShock": 784615384615384615,
+    "path": "flash",
+    "reason": "BUDGET_BELOW_REQUIRED",
+    "shockBps": 4000,
+    "success": false
+  },
+  "4000_solver": {
+    "borrowerUsdcWallet": 13000000000,
+    "collateralAfter": 10000000000000000000,
+    "debtAfter": 6799993200,
+    "hfAfter": 1500001500001500001,
+    "hfAfterShock": 784615384615384615,
+    "path": "solver",
+    "reason": "",
+    "shockBps": 4000,
+    "success": true
+  },
+  "500_flash": {
+    "borrowerUsdcWallet": 13089780394,
+    "collateralAfter": 7154787724000000000,
+    "debtAfter": 7702743409,
+    "hfAfter": 1500112565188006511,
+    "hfAfterShock": 1242307692307692307,
+    "path": "flash",
+    "reason": "",
+    "shockBps": 500,
+    "success": true
+  },
+  "500_solver": {
+    "borrowerUsdcWallet": 13000000000,
+    "collateralAfter": 10000000000000000000,
+    "debtAfter": 10766655900,
+    "hfAfter": 1500001500001500001,
+    "hfAfterShock": 1242307692307692307,
+    "path": "solver",
+    "reason": "",
+    "shockBps": 500,
+    "success": true
+  }
+}

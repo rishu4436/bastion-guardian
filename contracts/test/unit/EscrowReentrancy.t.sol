@@ -64,10 +64,11 @@ contract EscrowReentrancyTest is BastionTestBase {
 
         // 1) Claim arrives before any budget exists -> RecoveryRequired.
         bytes memory payload = abi.encodeWithSignature(
-            "settleRescue(address,bytes32,bytes32,uint256,address,address,uint256,uint256,uint64,bytes32)",
+            "settleRescue(address,bytes32,bytes32,address,uint256,address,address,uint256,uint256,uint64,bytes32)",
             address(0),
             rescueId,
             pid,
+            borrower,
             BASE_SEPOLIA,
             address(solverExec),
             address(rcpt),

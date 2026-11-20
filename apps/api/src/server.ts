@@ -1,8 +1,40 @@
+import type { PublicClient } from "viem";
 import { loadEnv } from "@bastion-guardian/config";
-import { buildApp } from "./app.js";
+import { createDatabase } from "@bastion-guardian/db";
+import { loadLocalDeployment } from "@bastion-guardian/contracts";
+import { createReadClient } from "@bastion-guardian/service-kit";
+import { SolverCoordinator } from "@bastion-guardian/solver-coordinator";
+import { NotificationDispatcher, providersFromEnv } from "@bastion-guardian/notification-dispatcher";
+import { buildApp, type BuildOptions } from "./app.js";
 
 const env = loadEnv();
-const app = await buildApp({ env, logger: true });
+const opts: BuildOptions = { env, logger: true };
+if (env.DATABASE_URL) {
+  const db = createDatabase(env.DATABASE_URL);
+  opts.db = db;
+  opts.providers = providersFromEnv();
+  opts.vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+  if (env.REDIS_URL)
+    opts.notifier = new NotificationDispatcher(db, opts.providers, {
+      redisUrl: env.REDIS_URL,
+      appUrl: env.API_PUBLIC_ORIGIN,
+    });
+  // LOCAL SIMULATION wiring (chain 31337). Read-only: the API never signs or sends transactions.
+  if (env.LOCAL_RPC_URL && env.LOCAL_ADDRESSES) {
+    const client = createReadClient(31337, env.LOCAL_RPC_URL) as PublicClient;
+    const a = loadLocalDeployment(env.LOCAL_ADDRESSES);
+    opts.clients = { 31337: client };
+    opts.coordinators = {
+      31337: new SolverCoordinator(db, client, {
+        chainId: 31337,
+        solverLiquidityVault: a.solverLiquidityVault,
+        solverQuoteManager: a.solverQuoteManager,
+        policyRegistry: a.policyRegistry,
+      }),
+    };
+  }
+}
+const app = await buildApp(opts);
 try {
   await app.listen({ host: env.API_HOST, port: env.API_PORT });
 } catch (err) {
