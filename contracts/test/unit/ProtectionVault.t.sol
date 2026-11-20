@@ -89,13 +89,13 @@ contract ProtectionVaultTest is BastionTestBase {
         vault.allocate(PID, address(reserveUsdc), 5000e6, 50e6, 100);
         vm.prank(attacker);
         vm.expectRevert(abi.encodeWithSelector(BastionErrors.Unauthorized.selector, attacker));
-        vault.settle(PID, attacker, 1e6, 0, uint64(block.timestamp));
+        vault.settle(PID, borrower, attacker, 1e6, 0, uint64(block.timestamp));
         vm.startPrank(address(escrow));
         vm.expectRevert();
-        vault.settle(PID, solverPayout, 5000e6 + 1, 0, uint64(block.timestamp));
+        vault.settle(PID, borrower, solverPayout, 5000e6 + 1, 0, uint64(block.timestamp));
         vm.expectRevert(abi.encodeWithSelector(BastionErrors.FeeRateExceeded.selector, 11e6, 1000e6, 100));
-        vault.settle(PID, solverPayout, 1000e6, 11e6, uint64(block.timestamp));
-        vault.settle(PID, solverPayout, 1000e6, 10e6, uint64(block.timestamp));
+        vault.settle(PID, borrower, solverPayout, 1000e6, 11e6, uint64(block.timestamp));
+        vault.settle(PID, borrower, solverPayout, 1000e6, 10e6, uint64(block.timestamp));
         vm.stopPrank();
         assertEq(reserveUsdc.balanceOf(solverPayout), 1010e6);
         assertEq(vault.totalHeld(address(reserveUsdc)), reserveUsdc.balanceOf(address(vault)));
@@ -109,9 +109,9 @@ contract ProtectionVaultTest is BastionTestBase {
         vm.prank(borrower);
         vault.pauseBudget(PID);
         vm.startPrank(address(escrow));
-        vault.settle(PID, solverPayout, 1000e6, 0, before); // executed before pause: honored
+        vault.settle(PID, borrower, solverPayout, 1000e6, 0, before); // executed before pause: honored
         vm.expectRevert(abi.encodeWithSelector(BastionErrors.PolicyNotActive.selector, PID));
-        vault.settle(PID, solverPayout, 1000e6, 0, uint64(block.timestamp + 1)); // after pause: rejected
+        vault.settle(PID, borrower, solverPayout, 1000e6, 0, uint64(block.timestamp + 1)); // after pause: rejected
         vm.stopPrank();
     }
 
@@ -121,9 +121,28 @@ contract ProtectionVaultTest is BastionTestBase {
         vm.expectRevert(abi.encodeWithSelector(BastionErrors.InvalidParameter.selector, bytes32("FEE_CEILING_RAISE")));
         vault.allocate(PID, address(reserveUsdc), 1000e6, 10e6, 100);
         vm.stopPrank();
+    }
+
+    /// R-07: a griefer allocating first under someone else's policyId only creates their own (owner, policyId) slot;
+    ///       the real owner's budget is independent and settlement debits only the budget of the named policy owner.
+    function test_budgetSlotCannotBeSquatted() public {
+        vm.prank(attacker);
+        vault.allocate(PID, address(reserveUsdc), 0, 0, 1000);
+        assertEq(vault.getBudget(attacker, PID).owner, attacker);
+        vm.prank(borrower);
+        vault.allocate(PID, address(reserveUsdc), 5000e6, 50e6, 100);
+        assertEq(vault.getBudget(borrower, PID).repayReserve, 5000e6);
+        vm.startPrank(address(escrow));
+        // The attacker's empty slot cannot be used to pay, and naming the attacker as owner cannot reach the borrower's funds.
+        vm.expectRevert();
+        vault.settle(PID, attacker, solverPayout, 1000e6, 10e6, uint64(block.timestamp));
+        vault.settle(PID, borrower, solverPayout, 1000e6, 10e6, uint64(block.timestamp));
+        vm.stopPrank();
+        assertEq(vault.getBudget(borrower, PID).repayReserve, 4000e6);
+        // Only the owner can manage their slot.
         vm.prank(attacker);
         vm.expectRevert(abi.encodeWithSelector(BastionErrors.Unauthorized.selector, attacker));
-        vault.allocate(PID, address(reserveUsdc), 0, 0, 50);
+        vault.pauseBudget(keccak256("nonexistent"));
     }
 
     function testFuzz_freeFundsAlwaysWithdrawable(uint256 dep, uint256 alloc) public {

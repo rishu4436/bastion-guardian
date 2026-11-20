@@ -152,7 +152,7 @@ abstract contract BastionTestBase is Test {
         // Reactive core wiring.
         core.addSource(BASE_SEPOLIA, address(observer), uint256(BastionRiskObserver.RiskObserved.selector), 1, 4, 96);
         core.addSource(
-            BASE_SEPOLIA, address(solverExec), uint256(SolverRescueExecutor.SolverRescueExecuted.selector), 2, 4, 160
+            BASE_SEPOLIA, address(solverExec), uint256(SolverRescueExecutor.SolverRescueExecuted.selector), 2, 4, 192
         );
         core.addSource(
             UNICHAIN_SEPOLIA,

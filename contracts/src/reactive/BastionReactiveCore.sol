@@ -246,18 +246,19 @@ contract BastionReactiveCore is AbstractReactive {
     }
 
     /// SolverRescueExecuted(bytes32 indexed rescueId, bytes32 indexed policyId, address indexed solver,
-    ///                      address payout, uint256 principal, uint256 fee, uint64 executedAt, bytes32 originEventId)
+    ///                      address payout, address policyOwner, uint256 principal, uint256 fee, uint64 executedAt,
+    ///                      bytes32 originEventId)
     function _onSolverRescue(bytes32 eventId, LogRecord calldata log_) internal {
         Destination memory d = settlementDestination;
         if (d.recipient == address(0)) return _ignore(eventId, log_, "NO_DESTINATION");
-        (address payout, uint256 principal, uint256 fee, uint64 executedAt, bytes32 originEventId) =
-            abi.decode(log_.data, (address, uint256, uint256, uint64, bytes32));
-        originEventId;
+        (address payout, address policyOwner, uint256 principal, uint256 fee, uint64 executedAt,) =
+            abi.decode(log_.data, (address, address, uint256, uint256, uint64, bytes32));
         bytes memory payload = abi.encodeWithSignature(
-            "settleRescue(address,bytes32,bytes32,uint256,address,address,uint256,uint256,uint64,bytes32)",
+            "settleRescue(address,bytes32,bytes32,address,uint256,address,address,uint256,uint256,uint64,bytes32)",
             address(0),
             bytes32(log_.topic1),
             bytes32(log_.topic2),
+            policyOwner,
             log_.chainId,
             log_.contractAddress,
             payout,
