@@ -1,0 +1,36 @@
+{
+  "name": "@bastion-guardian/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BASTION Guardian developer SDK (typed policy drafting, EIP-712 hashing, readiness, simulation).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@bastion-guardian/chain-registry": "workspace:*",
+    "@bastion-guardian/risk-engine": "workspace:*",
+    "@bastion-guardian/types": "workspace:*",
+    "viem": "2.40.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
