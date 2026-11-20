@@ -1,0 +1,33 @@
+{
+  "name": "@bastion-guardian/web",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint app",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@bastion-guardian/chain-registry": "workspace:*",
+    "@bastion-guardian/risk-engine": "workspace:*",
+    "@bastion-guardian/types": "workspace:*",
+    "@bastion-guardian/ui": "workspace:*",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.5",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

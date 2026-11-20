@@ -1,0 +1,159 @@
+No files changed, compilation skipped
+
+Ran 9 tests for test/unit/SolverMarketplace.t.sol:SolverMarketplaceTest
+[PASS] test_commitBeyondInventoryRejected() (gas: 60364)
+[PASS] test_commitReservesInventory() (gas: 389269)
+[PASS] test_commitmentListIsBounded() (gas: 1962241)
+[PASS] test_exitBlockedWhileCommitted() (gas: 507940)
+[PASS] test_expiredCommitmentReclaimableByAnyoneOnlyAfterExpiry() (gas: 368568)
+[PASS] test_onlyExecutorCanDraw() (gas: 323422)
+[PASS] test_rankingIsDeterministic() (gas: 975064)
+[PASS] test_registrationRequiresBond() (gas: 163107)
+[PASS] test_suspendedOrDisallowedSolverSkipped() (gas: 360770)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 6.10ms (1.54ms CPU time)
+
+Ran 6 tests for test/unit/SettlementLedger.t.sol:SettlementLedgerTest
+[PASS] testFuzz_transitionTableNeverLeavesTerminal(uint8) (runs: 512, μ: 13911, ~: 14008)
+[PASS] test_cannotReopen() (gas: 173831)
+[PASS] test_happyPathSolver() (gas: 438726)
+[PASS] test_onlyWriter() (gas: 32980)
+[PASS] test_recoveryPath() (gas: 441619)
+[PASS] test_terminalStatesAreFinal() (gas: 254397)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 8.93ms (8.30ms CPU time)
+
+Ran 10 tests for test/unit/ReactiveCore.t.sol:ReactiveCoreTest
+[PASS] test_adminOnlyConfiguration() (gas: 64017)
+[PASS] test_cooldownAndRateLimit() (gas: 1700478)
+[PASS] test_filtersNeverRevert() (gas: 429924)
+[PASS] test_inDebtCoreCannotRequest() (gas: 199736)
+[PASS] test_onlySystemCanReact() (gas: 48209)
+[PASS] test_pausedCoreIgnores() (gas: 152139)
+[PASS] test_payloadReservesFirstArgumentForRvm() (gas: 516988)
+[PASS] test_sameTxDifferentLogIndexIsDistinctEvent() (gas: 26104)
+[PASS] test_subscriptionsUseSixCriteriaAndUnsubscribeExactly() (gas: 395301)
+[PASS] test_validSignalRequestsCallback() (gas: 523765)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 10.04ms (1.34ms CPU time)
+
+Ran 13 tests for test/integration/EndToEndSolverRescue.t.sol:EndToEndSolverRescueTest
+[PASS] test_callbackFromForeignReactiveContractRejected() (gas: 139613)
+[PASS] test_directCallToRouterRejected() (gas: 87416)
+[PASS] test_duplicateOriginLogIgnoredByReactiveCore() (gas: 796649)
+[PASS] test_duplicateSettlementCallbackPaysOnce() (gas: 2924349)
+[PASS] test_forgedSettlementToEscrowRejected() (gas: 110343)
+[PASS] test_fullTwoCycleLoop() (gas: 3688255)
+[PASS] test_healthyPositionNotRescued() (gas: 651825)
+[PASS] test_manualRescueByOwner() (gas: 1400032)
+[PASS] test_pausedPolicyCannotRescue() (gas: 1029714)
+[PASS] test_replayedCallbackDoesNotRepayTwice() (gas: 2146399)
+[PASS] test_settlementFailureIsRecoverableWithoutDestinationReplay() (gas: 3411885)
+[PASS] test_staleSignalExpiresWithoutExecution() (gas: 984225)
+[PASS] test_untrustedDestinationExecutorRejectedByEscrow() (gas: 94079)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 11.93ms (7.76ms CPU time)
+
+Ran 1 test for test/unit/EscrowReentrancy.t.sol:EscrowReentrancyTest
+[PASS] test_hookTokenRecipientCannotReenterSettlement() (gas: 1868095)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 3.60ms (297.89µs CPU time)
+
+Ran 9 tests for test/integration/FlashRescue.t.sol:FlashRescueTest
+[PASS] test_excessiveSlippageReverts() (gas: 1035783)
+[PASS] test_executorOnlyCallableByRouter() (gas: 40983)
+[PASS] test_fallsBackToSolverWhenFlashUnavailable() (gas: 2286762)
+[PASS] test_flashCallbackCannotBeInvokedDirectly() (gas: 67243)
+[PASS] test_flashRequiringMoreThanPerActionCapIsInfeasible() (gas: 471006)
+[PASS] test_flashRescueDeleveragesAtomically() (gas: 1776898)
+[PASS] test_insufficientAllowanceCannotBypassOwnership() (gas: 282448)
+[PASS] test_maliciousVenueRevertsWholeRescue() (gas: 1126899)
+[PASS] test_noCollateralAuthorizationMeansUnavailable() (gas: 672700)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 9.40ms (6.04ms CPU time)
+
+Ran 8 tests for test/unit/ProtectionVault.t.sol:ProtectionVaultTest
+[PASS] testFuzz_freeFundsAlwaysWithdrawable(uint256,uint256) (runs: 512, μ: 258923, ~: 259602)
+[PASS] test_committedFundsNotWithdrawableButFreeAlwaysIs() (gas: 440649)
+[PASS] test_depositWithdrawFree() (gas: 120763)
+[PASS] test_feeCeilingCannotBeRaisedSilently() (gas: 217355)
+[PASS] test_pausedBudgetPreservesEarlierObligations() (gas: 348983)
+[PASS] test_releaseRequiresDelay() (gas: 301297)
+[PASS] test_settleOnlySettlerWithinLimits() (gas: 420809)
+[PASS] test_unsupportedAndFeeOnTransferTokensRejected() (gas: 777768)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 53.60ms (50.48ms CPU time)
+
+Ran 2 tests for test/unit/CrossLanguageVectors.t.sol:CrossLanguageVectorsTest
+[PASS] test_healthFactorVectors() (gas: 2164)
+[PASS] test_policyDigestAndIdMatchSdk() (gas: 713759)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 425.52µs (324.67µs CPU time)
+
+Ran 4 tests for test/unit/EmergencyControl.t.sol:EmergencyControlTest
+[PASS] test_approvalsDoNotCarryAcrossPauseEpochs() (gas: 284311)
+[PASS] test_globalScopeCoversAll() (gas: 96643)
+[PASS] test_guardianPausesOwnerResumesWithQuorum() (gas: 272818)
+[PASS] test_strangerCannotPause() (gas: 37952)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.39ms (232.19µs CPU time)
+
+Ran 3 tests for test/fork/AaveV3BaseSepoliaFork.t.sol:AaveV3BaseSepoliaForkTest
+[PASS] test_fork_adapterReadsRealAavePosition() (gas: 320371)
+[PASS] test_fork_flashRescueUsesRealAaveFlashLoan() (gas: 3193451)
+[PASS] test_fork_solverRescueRepaysRealAaveDebt() (gas: 3135098)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 112.37ms (6.09ms CPU time)
+
+Ran 14 tests for test/unit/PolicyRegistry.t.sol:PolicyRegistryTest
+[PASS] testFuzz_consumeNeverExceedsCaps(uint256[8]) (runs: 512, μ: 1133525, ~: 1134676)
+[PASS] test_adminCannotRaiseUserCaps() (gas: 748989)
+[PASS] test_cannotProtectSomeoneElsesAccountWithoutDelegation() (gas: 654657)
+[PASS] test_consumeEnforcesEveryLimit() (gas: 1022490)
+[PASS] test_forgedSignatureRejected() (gas: 90250)
+[PASS] test_globalPauseBlocksConsumption() (gas: 728968)
+[PASS] test_ownerRegistersDirectly() (gas: 650677)
+[PASS] test_pauseResumeRevokeOwnerOnly() (gas: 807650)
+[PASS] test_relayerRegistersWithEip712Signature() (gas: 637007)
+[PASS] test_signatureReplayRejectedByNonce() (gas: 632034)
+[PASS] test_tamperedFieldInvalidatesSignature() (gas: 92312)
+[PASS] test_validationRejectsBadParameters() (gas: 511890)
+[PASS] test_versionReplacementCarriesSpendAndInvalidatesOldVersion() (gas: 1098469)
+[PASS] test_wrongDestinationChainRejected() (gas: 66794)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 116.34ms (115.30ms CPU time)
+
+Ran 4 tests for test/fuzz/HealthFactorMath.t.sol:HealthFactorMathFuzzTest
+[PASS] testFuzz_healthFactorMatchesMarket(uint256,uint256) (runs: 512, μ: 392960, ~: 392984)
+[PASS] testFuzz_minimality(uint256,uint256) (runs: 512, μ: 599288, ~: 688981)
+[PASS] testFuzz_repayEstimateReachesTarget(uint256,uint256,uint256) (runs: 512, μ: 660724, ~: 761537)
+[PASS] test_deleverageUnreachableWhenTargetBelowCostWeightedLt() (gas: 1310)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 116.53ms (327.87ms CPU time)
+
+Ran 2 tests for test/invariant/RescueInvariants.t.sol:RescueInvariantsTest
+[PASS]
+RescueInvariantsTest invariants:
+[PASS] invariant_executorsHoldNothing
+[PASS] invariant_noDoubleReimbursement
+[PASS] invariant_pendingSettlementsConsistent
+[PASS] invariant_replaysAndRescuesSafe
+[PASS] invariant_solverInventoryBacked
+[PASS] invariant_totalSpendWithinAuthorization
+[PASS] invariant_vaultFullyBacked
+ RescueInvariantsTest invariants (runs: 128, calls: 8192, reverts: 0)
+
+╭---------------+---------------------+-------+---------+----------╮
+| Contract      | Selector            | Calls | Reverts | Discards |
++==================================================================+
+| RescueHandler | borrowerRepays      | 983   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | crash               | 880   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | deliverSettlement   | 954   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | observeAndRescue    | 879   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | replacePolicy       | 877   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | replayRisk          | 882   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | retry               | 901   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | toggleBudgetPause   | 920   | 0       | 0        |
+|---------------+---------------------+-------+---------+----------|
+| RescueHandler | withdrawFreeReserve | 916   | 0       | 0        |
+╰---------------+---------------------+-------+---------+----------╯
+
+[PASS] test_handlerPathExecutesRealRescueAndSettlement() (gas: 4098244)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 1.87s (1.86s CPU time)
+
+Ran 13 test suites in 1.87s (2.32s CPU time): 85 tests passed, 0 failed, 0 skipped (85 total tests)
