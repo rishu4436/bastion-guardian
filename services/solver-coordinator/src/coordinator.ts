@@ -43,7 +43,7 @@ export class SolverCoordinator {
   constructor(
     private readonly db: Database,
     private readonly client: PublicClient,
-    private readonly cfg: CoordinatorConfig,
+    public readonly cfg: CoordinatorConfig,
     logger?: Logger,
   ) {
     this.log = logger ?? createLogger("solver-coordinator");

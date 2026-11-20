@@ -84,3 +84,25 @@ describe("api", () => {
     expect(res.json().openapi).toMatch(/^3\./);
   });
 });
+
+describe("api without a database", () => {
+  it("DB-backed routes fail explicitly instead of returning fabricated data", async () => {
+    const res = await app.inject({ method: "GET", url: "/v1/policies" });
+    expect(res.statusCode).toBe(503);
+    expect(res.json().error).toBe("DB_UNAVAILABLE");
+  });
+  it("runs a Section 10 scenario on the labeled fixture preset (matches Foundry vectors)", async () => {
+    const { presets } = (await app.inject({ method: "GET", url: "/v1/simulations/presets" })).json();
+    expect(presets[0].label).toMatch(/LOCAL FIXTURE/);
+    const res = await app.inject({
+      method: "POST",
+      url: "/v1/simulations/scenario",
+      payload: { base: presets[0].base, spec: { kind: "price_shock", shockBps: 1000 } },
+    });
+    expect(res.statusCode).toBe(200);
+    const b = res.json();
+    expect(b.provenance).toBe("SIMULATED");
+    expect(b.result.outcome).toBe("flash");
+    expect(b.result.flash.surplusToBorrower).toBe("112560361");
+  });
+});
