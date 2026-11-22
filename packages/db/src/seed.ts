@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import type { Database } from "./client.js";
-import { chains, protocols, tokens } from "./schema.js";
+import { chains, deploymentRegistry, protocols, tokens } from "./schema.js";
 
 /**
  * Reference data that is true regardless of deployment state: the three target networks, the official Aave V3
@@ -113,4 +113,44 @@ export async function seedLocalSimulation(
         })),
       )
       .onConflictDoNothing();
+}
+
+/** Contract names recorded for a deployment (EOAs and ids are excluded). */
+export const DEPLOYMENT_CONTRACTS = [
+  "policyRegistry",
+  "ledger",
+  "receipts",
+  "emergency",
+  "solverRegistry",
+  "solverLiquidityVault",
+  "solverQuoteManager",
+  "solverRescueExecutor",
+  "flashRescueExecutor",
+  "riskObserver",
+  "callbackRouter",
+  "protectionVault",
+  "reserveEscrow",
+  "reactiveCore",
+  "destCallbackProxy",
+  "reserveCallbackProxy",
+  "fixtureMarket",
+  "fixtureOracle",
+  "fixtureVenue",
+  "fixtureAdapter",
+] as const;
+
+/** Records deployed contract addresses so the API can serve them (idempotent). */
+export async function recordDeployments(
+  db: Database,
+  chainId: number,
+  addresses: Partial<Record<(typeof DEPLOYMENT_CONTRACTS)[number], string>>,
+  mode: "local_simulation" | "testnet",
+) {
+  const rows = DEPLOYMENT_CONTRACTS.filter((k) => addresses[k]).map((k) => ({
+    chainId,
+    contractName: k,
+    address: addresses[k]!.toLowerCase(),
+    mode,
+  }));
+  if (rows.length) await db.insert(deploymentRegistry).values(rows).onConflictDoNothing();
 }

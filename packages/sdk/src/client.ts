@@ -2,10 +2,12 @@ import type {
   Address,
   AnalyticsDaily,
   ChainInfo,
+  Deployments,
   Hex,
   LendingPosition,
   Paged,
   PolicyDetail,
+  PolicyNonce,
   PositionObservation,
   ProofOfProtection,
   ProtectionPolicy,
@@ -142,6 +144,11 @@ export class BastionClient {
   systemStatus = () => this.req<SystemStatus>("/v1/system/status");
   protocols = () => this.req<Paged<Protocol>>("/v1/protocols");
   tokens = (q?: { chainId?: number }) => this.req<Paged<Token>>(`/v1/tokens${qs(q)}`);
+  /** Recorded BASTION contract addresses on a chain. `mode` is "local_simulation" or "testnet"; null if none. */
+  deployments = (chainId: number) => this.req<Deployments>(`/v1/deployments${qs({ chainId })}`);
+  /** Next EIP-712 policy nonce for `owner`, read from BastionPolicyRegistry at the latest block. */
+  policyNonce = (chainId: number, owner: Address) =>
+    this.req<PolicyNonce>(`/v1/policy-registry/nonce${qs({ chainId, owner })}`);
 
   // ---- policies & positions ----------------------------------------------------------------------------------
   policies = (q?: {
@@ -156,6 +163,8 @@ export class BastionClient {
     this.req<Paged<ReadinessSnapshot>>(`/v1/policies/${chainId}/${policyId}/readiness${qs({ limit })}`);
   positions = (q?: { chainId?: number; account?: Address; limit?: number }) =>
     this.req<Paged<LendingPosition>>(`/v1/positions${qs(q)}`);
+  position = (positionId: string) =>
+    this.req<LendingPosition & { provenance: string }>(`/v1/positions/${positionId}`);
   positionObservations = (positionId: string, limit?: number) =>
     this.req<Paged<PositionObservation>>(`/v1/positions/${positionId}/observations${qs({ limit })}`);
   riskObservations = (q?: { chainId?: number; policyId?: Hex; limit?: number }) =>

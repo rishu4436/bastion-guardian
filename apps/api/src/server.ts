@@ -1,7 +1,7 @@
 import type { PublicClient } from "viem";
 import { Redis } from "ioredis";
 import { loadEnv } from "@bastion-guardian/config";
-import { createDatabase } from "@bastion-guardian/db";
+import { createDatabase, recordDeployments } from "@bastion-guardian/db";
 import { loadLocalDeployment } from "@bastion-guardian/contracts";
 import { createReadClient } from "@bastion-guardian/service-kit";
 import { SolverCoordinator } from "@bastion-guardian/solver-coordinator";
@@ -25,6 +25,7 @@ if (env.DATABASE_URL) {
   if (env.LOCAL_RPC_URL && env.LOCAL_ADDRESSES) {
     const client = createReadClient(31337, env.LOCAL_RPC_URL) as PublicClient;
     const a = loadLocalDeployment(env.LOCAL_ADDRESSES);
+    await recordDeployments(db, 31337, a, "local_simulation");
     opts.clients = { 31337: client };
     opts.coordinators = {
       31337: new SolverCoordinator(db, client, {

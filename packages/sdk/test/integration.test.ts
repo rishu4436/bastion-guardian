@@ -34,11 +34,28 @@ describe.skipIf(!stack)("@bastion-guardian/sdk client against the real API (LOCA
     const pos = await client.positions({ account: stack!.borrowerA });
     expect(pos.items[0]!.healthFactorWad).toMatch(/^\d+$/);
     const obs = await client.positionObservations(pos.items[0]!.id);
+    const one = await client.position(pos.items[0]!.id);
+    expect(one.healthFactorWad).toBe(pos.items[0]!.healthFactorWad);
+    await expect(client.position("00000000-0000-4000-8000-000000000000")).rejects.toMatchObject({
+      status: 404,
+      code: "POSITION_NOT_FOUND",
+    });
     expect(obs.items.every((o) => o.source === "chain")).toBe(true);
     await expect(client.policy(31337, `0x${"ef".repeat(32)}`)).rejects.toMatchObject({
       status: 404,
       code: "POLICY_NOT_FOUND",
     });
+  });
+
+  it("reads recorded deployments and the live policy nonce from BastionPolicyRegistry", async () => {
+    const d = await client.deployments(31337);
+    expect(d.mode).toBe("local_simulation");
+    expect(d.contracts.policyRegistry).toMatch(/^0x[0-9a-fA-F]{40}$/);
+    const n = await client.policyNonce(31337, stack!.borrowerA);
+    expect(n.registry.toLowerCase()).toBe(d.contracts.policyRegistry!.toLowerCase());
+    expect(BigInt(n.nonce)).toBeGreaterThanOrEqual(1n); // borrower A registered a policy in the fixture
+    expect(n.blockNumber).toMatch(/^\d+$/);
+    expect((await client.deployments(84532)).mode).toBeNull();
   });
 
   it("replays the event stream from a cursor and stops on abort", async () => {

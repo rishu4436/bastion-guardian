@@ -414,4 +414,20 @@ describe.skipIf(!pgUrl)("api v1 (LOCAL SIMULATION: anvil + Postgres)", () => {
       (await app.inject({ method: "GET", url: `/v1/rescues/0x${"cd".repeat(32)}/proof` })).statusCode,
     ).toBe(404);
   });
+  it("serves recorded deployments and reads the policy nonce from chain", async () => {
+    const d = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=31337" })).json();
+    expect(d.mode).toBe("local_simulation");
+    expect(d.contracts.policyRegistry).toBe(env.stack.addresses.policyRegistry.toLowerCase());
+    const n = await app.inject({
+      method: "GET",
+      url: `/v1/policy-registry/nonce?chainId=31337&owner=${env.stack.addresses.borrowerA}`,
+    });
+    expect(n.statusCode).toBe(200);
+    expect(BigInt(n.json().nonce)).toBeGreaterThanOrEqual(1n); // borrowerA registered policyA in the deploy script
+    const other = await app.inject({
+      method: "GET",
+      url: "/v1/policy-registry/nonce?chainId=84532&owner=0x000000000000000000000000000000000000dEaD",
+    });
+    expect(other.json().error).toBe("CHAIN_UNAVAILABLE");
+  });
 });

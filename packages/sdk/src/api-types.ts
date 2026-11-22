@@ -419,3 +419,19 @@ export interface StreamEvent {
   event: string;
   data: Record<string, unknown>;
 }
+
+export interface Deployments {
+  chainId: number;
+  mode: "local_simulation" | "testnet" | null;
+  /** contractName -> address, e.g. policyRegistry, rescueRouter, reserveVault. */
+  contracts: Record<string, Address>;
+}
+
+export interface PolicyNonce {
+  chainId: number;
+  owner: Address;
+  registry: Address;
+  /** Decimal string (uint256). */
+  nonce: string;
+  blockNumber: string;
+}

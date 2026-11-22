@@ -77,12 +77,14 @@ Conventions: amounts, health factors (1e18 WAD) and block numbers are decimal in
 | `GET` | `/v1/policies` | Registered protection policies (public on-chain data) | `chainId`, `owner`, `account`, `status`, `limit` | - | public |
 | `GET` | `/v1/policies/{chainId}/{policyId}` | Policy detail: versions, authorizations, budget, readiness and rescues | `chainId` (path), `policyId` (path) | - | public |
 | `GET` | `/v1/policies/{chainId}/{policyId}/readiness` | Guardian readiness history | `limit`, `chainId` (path), `policyId` (path) | - | public |
+| `GET` | `/v1/policy-registry/nonce` | Next policy nonce for an owner, read from BastionPolicyRegistry.nonces(owner) at the latest block | `chainId` (required), `owner` (required) | - | public |
 
 ## positions
 
 | Method | Path | Summary | Parameters | Body | Auth |
 | --- | --- | --- | --- | --- | --- |
 | `GET` | `/v1/positions` | Observed lending positions | `chainId`, `account`, `limit` | - | public |
+| `GET` | `/v1/positions/{id}` | One observed lending position (latest indexed state) | `id` (path) | - | public |
 | `GET` | `/v1/positions/{id}/observations` | Health-factor history for a position | `limit`, `id` (path) | - | public |
 
 ## rescues
@@ -128,5 +130,6 @@ Conventions: amounts, health factors (1e18 WAD) and block numbers are decimal in
 
 | Method | Path | Summary | Parameters | Body | Auth |
 | --- | --- | --- | --- | --- | --- |
+| `GET` | `/v1/deployments` | Recorded BASTION contract addresses per chain (mode says local_simulation or testnet) | `chainId` (required) | - | public |
 | `GET` | `/v1/system/status` | Indexer checkpoints, deployment records and execution mode | - | - | public |
 

@@ -25,6 +25,7 @@ import { meRoutes } from "./routes/me.js";
 import { adminRoutes } from "./routes/admin.js";
 import { streamRoutes } from "./routes/stream.js";
 import { proofRoutes } from "./routes/proof.js";
+import { chainReadRoutes } from "./routes/chain-reads.js";
 
 export const API_VERSION = "1.0.0";
 const DEV_PEPPER = "bastion-dev-only-pepper-not-for-production-use";
@@ -126,6 +127,7 @@ export async function buildApp({
   await app.register(adminRoutes, { prefix: "/v1", ctx });
   await app.register(streamRoutes, { prefix: "/v1", ctx });
   await app.register(proofRoutes, { prefix: "/v1", ctx });
+  await app.register(chainReadRoutes, { prefix: "/v1", ctx });
   app.get(
     "/v1/notifications/webpush-key",
     {

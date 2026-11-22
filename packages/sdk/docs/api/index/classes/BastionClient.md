@@ -103,6 +103,24 @@ Session cookie captured from verify() in non-browser runtimes.
 
 ***
 
+### deployments()
+
+> **deployments**(`chainId`): `Promise`\<[`Deployments`](../interfaces/Deployments.md)\>
+
+Recorded BASTION contract addresses on a chain. `mode` is "local_simulation" or "testnet"; null if none.
+
+#### Parameters
+
+##### chainId
+
+`number`
+
+#### Returns
+
+`Promise`\<[`Deployments`](../interfaces/Deployments.md)\>
+
+***
+
 ### health()
 
 > **health**(): `Promise`\<\{\[`k`: `string`\]: `unknown`; `status`: `string`; \}\>
@@ -244,6 +262,44 @@ Session cookie captured from verify() in non-browser runtimes.
 #### Returns
 
 `Promise`\<[`PolicyDetail`](../interfaces/PolicyDetail.md)\>
+
+***
+
+### policyNonce()
+
+> **policyNonce**(`chainId`, `owner`): `Promise`\<[`PolicyNonce`](../interfaces/PolicyNonce.md)\>
+
+Next EIP-712 policy nonce for `owner`, read from BastionPolicyRegistry at the latest block.
+
+#### Parameters
+
+##### chainId
+
+`number`
+
+##### owner
+
+`` `0x${string}` ``
+
+#### Returns
+
+`Promise`\<[`PolicyNonce`](../interfaces/PolicyNonce.md)\>
+
+***
+
+### position()
+
+> **position**(`positionId`): `Promise`\<[`LendingPosition`](../interfaces/LendingPosition.md) & `object`\>
+
+#### Parameters
+
+##### positionId
+
+`string`
+
+#### Returns
+
+`Promise`\<[`LendingPosition`](../interfaces/LendingPosition.md) & `object`\>
 
 ***
 

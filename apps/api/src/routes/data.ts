@@ -57,6 +57,29 @@ export const dataRoutes: FastifyPluginAsync<{ ctx: ApiContext }> = async (app, {
   );
 
   r.get(
+    "/deployments",
+    {
+      schema: {
+        tags: ["system"],
+        summary: "Recorded BASTION contract addresses per chain (mode says local_simulation or testnet)",
+        querystring: z.object({ chainId: ChainIdQ }),
+      },
+    },
+    async (req) => {
+      const rows = await needDb(ctx)
+        .select()
+        .from(deploymentRegistry)
+        .where(eq(deploymentRegistry.chainId, req.query.chainId))
+        .orderBy(asc(deploymentRegistry.contractName));
+      return {
+        chainId: req.query.chainId,
+        mode: rows[0]?.mode ?? null,
+        contracts: Object.fromEntries(rows.map((r) => [r.contractName, r.address])),
+      };
+    },
+  );
+
+  r.get(
     "/protocols",
     {
       schema: {
@@ -244,6 +267,25 @@ export const dataRoutes: FastifyPluginAsync<{ ctx: ApiContext }> = async (app, {
           .limit(req.query.limit),
         provenance: PROVENANCE_NOTE,
       }),
+  );
+
+  r.get(
+    "/positions/:id",
+    {
+      schema: {
+        tags: ["positions"],
+        summary: "One observed lending position (latest indexed state)",
+        params: z.object({ id: z.string().uuid() }),
+      },
+    },
+    async (req) => {
+      const [row] = await needDb(ctx)
+        .select()
+        .from(lendingPositions)
+        .where(eq(lendingPositions.id, req.params.id));
+      if (!row) throw new HttpError(404, "POSITION_NOT_FOUND");
+      return json({ ...row, provenance: PROVENANCE_NOTE });
+    },
   );
 
   r.get(
