@@ -137,6 +137,10 @@ export const DEPLOYMENT_CONTRACTS = [
   "fixtureOracle",
   "fixtureVenue",
   "fixtureAdapter",
+  "aaveV3Adapter",
+  "fUSDC",
+  "fWETH",
+  "frUSDC",
 ] as const;
 
 /** Records deployed contract addresses so the API can serve them (idempotent). */
@@ -153,4 +157,51 @@ export async function recordDeployments(
     mode,
   }));
   if (rows.length) await db.insert(deploymentRegistry).values(rows).onConflictDoNothing();
+}
+
+/** A testnet deployment as recorded in `@bastion-guardian/chain-registry` (TESTNET_DEPLOYMENTS). */
+export interface TestnetDeploymentRow {
+  chainId: number;
+  key: string;
+  address: string;
+  txHash: string;
+  block: number;
+  verifiedOn: readonly string[];
+}
+
+/**
+ * Records real testnet deployments (with creation tx, block, deployer and source-verification state) so the API's
+ * `/v1/deployments` serves them with `mode = 'testnet'`. Idempotent: re-running refreshes tx/block/verification.
+ */
+export async function recordTestnetDeployments(
+  db: Database,
+  rows: readonly TestnetDeploymentRow[],
+  deployer: string,
+): Promise<number> {
+  if (!rows.length) return 0;
+  await db
+    .insert(deploymentRegistry)
+    .values(
+      rows.map((d) => ({
+        chainId: d.chainId,
+        contractName: d.key,
+        address: d.address.toLowerCase(),
+        mode: "testnet" as const,
+        txHash: d.txHash.toLowerCase(),
+        blockNumber: BigInt(d.block),
+        deployer: deployer.toLowerCase(),
+        sourceVerified: d.verifiedOn.length > 0,
+      })),
+    )
+    .onConflictDoUpdate({
+      target: [deploymentRegistry.chainId, deploymentRegistry.contractName, deploymentRegistry.address],
+      set: {
+        mode: sql`excluded.mode`,
+        txHash: sql`excluded.tx_hash`,
+        blockNumber: sql`excluded.block_number`,
+        deployer: sql`excluded.deployer`,
+        sourceVerified: sql`excluded.source_verified`,
+      },
+    });
+  return rows.length;
 }

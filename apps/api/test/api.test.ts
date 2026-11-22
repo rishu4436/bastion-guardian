@@ -19,16 +19,31 @@ describe("api", () => {
     expect(body.status).toBe("ok");
     expect(body.mainnetEnabled).toBe(false);
     expect(body.liveExecutionEnabled).toBe(false);
-    expect(body.deployments.recorded).toBe(0);
+    // 16 non-fixture testnet contracts recorded from real receipts (Lasna 1, Base Sepolia 12, Unichain Sepolia 3)
+    expect(body.deployments.recorded).toBe(16);
+    expect(body.deployments.note).toBe("See /v1/chains");
     expect(res.headers["x-content-type-options"]).toBe("nosniff");
   });
-  it("GET /v1/chains lists verified proxies and no fake deployments", async () => {
+  it("GET /v1/chains reports only recorded testnet deployments", async () => {
     const res = await app.inject({ method: "GET", url: "/v1/chains" });
     const { chains } = res.json();
     expect(chains).toHaveLength(3);
-    for (const c of chains)
-      for (const v of Object.values(c.bastionContracts) as { deployed: boolean }[])
-        expect(v.deployed).toBe(false);
+    const deployed = (id: number) =>
+      Object.entries(
+        chains.find((c: { id: number }) => c.id === id).bastionContracts as Record<
+          string,
+          { deployed: boolean }
+        >,
+      )
+        .filter(([, v]) => v.deployed)
+        .map(([k]) => k)
+        .sort();
+    expect(deployed(5318007)).toEqual(["BastionReactiveCore"]);
+    expect(deployed(1301)).toEqual(
+      ["BastionEmergencyControl", "BastionProtectionVault", "CrossChainReserveEscrow"].sort(),
+    );
+    expect(deployed(84532)).not.toContain("BastionReactiveCore");
+    expect(deployed(84532)).toContain("BastionCallbackRouter");
   });
   it("POST /v1/simulations/stress returns labeled simulated output", async () => {
     const res = await app.inject({

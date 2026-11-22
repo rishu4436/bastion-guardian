@@ -1,14 +1,14 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { CHAINS, deploymentStatus, type BastionContractName } from "@bastion-guardian/chain-registry";
+import {
+  BASTION_CONTRACT_NAMES,
+  CHAINS,
+  deploymentStatus,
+  type BastionContractName,
+} from "@bastion-guardian/chain-registry";
 
-const CONTRACTS: BastionContractName[] = [
-  "BastionReactiveCore",
-  "BastionCallbackRouter",
-  "BastionPolicyRegistry",
-  "CrossChainReserveEscrow",
-];
+const CONTRACTS: readonly BastionContractName[] = BASTION_CONTRACT_NAMES;
 
 export const chainRoutes: FastifyPluginAsync = async (app) => {
   const r = app.withTypeProvider<ZodTypeProvider>();

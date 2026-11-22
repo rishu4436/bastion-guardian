@@ -1,7 +1,8 @@
 import type { PublicClient } from "viem";
 import { Redis } from "ioredis";
 import { loadEnv } from "@bastion-guardian/config";
-import { createDatabase, recordDeployments } from "@bastion-guardian/db";
+import { createDatabase, recordDeployments, recordTestnetDeployments } from "@bastion-guardian/db";
+import { TESTNET_DEPLOYER, TESTNET_DEPLOYMENTS } from "@bastion-guardian/chain-registry";
 import { loadLocalDeployment } from "@bastion-guardian/contracts";
 import { createReadClient } from "@bastion-guardian/service-kit";
 import { SolverCoordinator } from "@bastion-guardian/solver-coordinator";
@@ -21,6 +22,8 @@ if (env.DATABASE_URL) {
       redisUrl: env.REDIS_URL,
       appUrl: env.API_PUBLIC_ORIGIN,
     });
+  // Real testnet deployments (Lasna, Base Sepolia, Unichain Sepolia) from the chain registry; idempotent upsert.
+  await recordTestnetDeployments(db, TESTNET_DEPLOYMENTS, TESTNET_DEPLOYER);
   // LOCAL SIMULATION wiring (chain 31337). Read-only: the API never signs or sends transactions.
   if (env.LOCAL_RPC_URL && env.LOCAL_ADDRESSES) {
     const client = createReadClient(31337, env.LOCAL_RPC_URL) as PublicClient;

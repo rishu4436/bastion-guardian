@@ -6,6 +6,8 @@ import { loadEnv } from "@bastion-guardian/config";
 import { SolverCoordinator, QUOTE_TYPES, quoteDomain } from "@bastion-guardian/solver-coordinator";
 import type { NotificationProvider, RenderedMessage } from "@bastion-guardian/notification-dispatcher";
 import { createTestEnv, probePostgres, type TestEnv } from "@bastion/test-env";
+import { recordTestnetDeployments, deploymentRegistry } from "@bastion-guardian/db";
+import { TESTNET_DEPLOYER, TESTNET_DEPLOYMENTS } from "@bastion-guardian/chain-registry";
 import { buildApp } from "../src/app.js";
 
 const pgUrl = await probePostgres();
@@ -429,5 +431,25 @@ describe.skipIf(!pgUrl)("api v1 (LOCAL SIMULATION: anvil + Postgres)", () => {
       url: "/v1/policy-registry/nonce?chainId=84532&owner=0x000000000000000000000000000000000000dEaD",
     });
     expect(other.json().error).toBe("CHAIN_UNAVAILABLE");
+  });
+  it("serves the recorded testnet deployments (mode testnet, with creation tx) idempotently", async () => {
+    expect(await recordTestnetDeployments(env.db, TESTNET_DEPLOYMENTS, TESTNET_DEPLOYER)).toBe(
+      TESTNET_DEPLOYMENTS.length,
+    );
+    await recordTestnetDeployments(env.db, TESTNET_DEPLOYMENTS, TESTNET_DEPLOYER); // re-run: no duplicates
+    const base = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=84532" })).json();
+    expect(base.mode).toBe("testnet");
+    expect(base.contracts.callbackRouter).toBe("0x981284cfc15fde09c4401874091871c8e24c0e8e");
+    expect(base.contracts.policyRegistry).toBe("0x04bb6e0c86e4ab79b7761d0b4961b2ff612a8899");
+    const uni = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=1301" })).json();
+    expect(uni.contracts.reserveEscrow).toBe("0x0d37c05cfcbdcfdef31350b7373b97c9234ccaac");
+    const lasna = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=5318007" })).json();
+    expect(lasna.contracts.reactiveCore).toBe("0x811111d0a5dabbd16180ba42d11992863ef17e33");
+    const rows = await env.db.select().from(deploymentRegistry);
+    const testnet = rows.filter((r) => r.mode === "testnet");
+    expect(testnet).toHaveLength(TESTNET_DEPLOYMENTS.length);
+    expect(testnet.every((r) => /^0x[0-9a-f]{64}$/.test(r.txHash ?? "") && (r.blockNumber ?? 0n) > 0n)).toBe(
+      true,
+    );
   });
 });

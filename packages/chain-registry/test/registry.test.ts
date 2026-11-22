@@ -6,6 +6,7 @@ import {
   deploymentStatus,
   isSupportedChain,
   AAVE_V3_BASE_SEPOLIA,
+  TESTNET_DEPLOYMENTS,
 } from "../src/index.js";
 
 describe("chain registry", () => {
@@ -28,8 +29,39 @@ describe("chain registry", () => {
     const h = `0x${"ab".repeat(32)}`;
     expect(explorerTxUrl(84532, h)).toBe(`https://sepolia.basescan.org/tx/${h}`);
   });
-  it("reports no BASTION deployments (nothing deployed yet)", () => {
-    expect(deploymentStatus("BastionReactiveCore", 5318007)).toBeNull();
+  it("reports the recorded testnet deployments and nothing else", () => {
+    expect(deploymentStatus("BastionReactiveCore", 5318007)?.address).toBe(
+      "0x811111D0a5DaBBD16180Ba42d11992863EF17e33",
+    );
+    expect(deploymentStatus("BastionCallbackRouter", 84532)?.block).toBe(62051422);
+    expect(deploymentStatus("CrossChainReserveEscrow", 1301)?.txHash).toBe(
+      "0x1a72737aab18093c2924364ffdefbdb21887f5272cf6a72ba90f9b500e699214",
+    );
+    // the official-pool adapter, not the fixture-market adapter
+    expect(deploymentStatus("AaveV3LendingAdapter", 84532)?.address).toBe(
+      "0x811111D0a5DaBBD16180Ba42d11992863EF17e33",
+    );
+    expect(deploymentStatus("BastionCallbackRouter", 5318007)).toBeNull();
+    expect(deploymentStatus("BastionReactiveCore", 84532)).toBeNull();
+  });
+  it("keeps every testnet record well-formed, unique per chain and on a supported chain", () => {
+    const seen = new Set<string>();
+    for (const d of TESTNET_DEPLOYMENTS) {
+      expect(isSupportedChain(d.chainId)).toBe(true);
+      expect(d.address).toMatch(/^0x[0-9a-fA-F]{40}$/);
+      expect(d.txHash).toMatch(/^0x[0-9a-f]{64}$/);
+      expect(d.block).toBeGreaterThan(0);
+      const k = `${d.chainId}:${d.key}`;
+      expect(seen.has(k)).toBe(false);
+      seen.add(k);
+    }
+    expect(
+      TESTNET_DEPLOYMENTS.filter((d) => d.fixture)
+        .map((d) => d.key)
+        .sort(),
+    ).toEqual(
+      ["fUSDC", "fWETH", "fixtureAdapter", "fixtureMarket", "fixtureOracle", "fixtureVenue", "frUSDC"].sort(),
+    );
   });
   it("pins the official Aave V3 Base Sepolia pool", () => {
     expect(AAVE_V3_BASE_SEPOLIA.pool).toBe("0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27");
