@@ -211,8 +211,9 @@ export function EnvironmentBanner() {
       className="border-b border-limited/30 bg-limited/10 px-6 py-1.5 text-center text-xs text-limited"
       role="note"
     >
-      Testnet software, not audited. Chain 31337 data is a LOCAL SIMULATION (anvil + fixture market). No
-      BASTION contracts are deployed to any public network yet.
+      Testnet software, not audited. Chain 31337 data is a LOCAL SIMULATION (anvil + fixture market). Only the
+      Reactive core is deployed on Lasna testnet (not yet configured); Base and Unichain Sepolia contracts are
+      not deployed yet.
     </div>
   );
 }
