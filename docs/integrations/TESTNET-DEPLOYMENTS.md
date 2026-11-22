@@ -13,12 +13,58 @@ Deployer (throwaway testnet key, encrypted Foundry keystore on the build box, ne
 | Base Sepolia 84532     | **Deployed and wired**: destination stack + labeled FIXTURE market; official Aave V3 adapter deployed        |
 | Unichain Sepolia 1301  | **Deployed and wired**: reserve stack (vault, escrow) + labeled FIXTURE reserve token `frUSDC`               |
 | Live loop (flash path) | **Verified live, 2026-11-22 13:08 IST**: Base event → Lasna `react()` → Base callback → flash rescue, HF 1.5 |
-| Live loop (solver)     | **Not exercised live** (needs a separate solver account and a funded reserve budget; covered locally only)   |
+| Live loop (solver)     | **Verified live, 2026-11-22 13:37 IST**: rescue → Unichain reimbursement → Base ack (all 3 Reactive cycles)  |
 | Any mainnet            | **Never**: mainnet is disabled; deploy scripts refuse non-allowlisted chains                                 |
 
 > **FIXTURE** contracts (`fUSDC`, `fWETH`, `frUSDC`, `FixtureOracle`, `FixtureLendingMarket`, `FixtureSwapVenue`) are
 > owner-mintable test fixtures, not real assets. The live loop runs against the fixture market so the price crash can
 > be controlled; the production adapter for the official Aave V3 Base Sepolia pool is deployed alongside it.
+
+## Live solver-funded rescue + cross-chain settlement, 2026-11-22
+
+All three Reactive cycles ran on public testnets with no manual relaying. Solver: a second throwaway testnet account
+`0xF8c263ED0573A8B9cC1C684E3635dB25280F7cb7` (encrypted Foundry keystore on the build box, never committed). The policy
+is version 2 of `0xb764…216b`: same owner/account/market, so `registerPolicy` atomically replaced the flash-only v1 with
+a solver-only v2 that allows exactly that solver (cumulative spend carries over; caps raised to 20,000 / 400 fUSDC).
+
+| #   | Chain    | What happened                                                                                                            | Tx                                                                   | Block    | Block time |
+| --- | -------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- | -------- | ---------- |
+| 0   | Lasna    | `setPolicyMirror(policy, true, v2, 0)`                                                                                   | `0x4390f561dff83c23973c2d75f65e468a68f777054eac39f9752f50bef4da5552` | 8959308  | 13:36:56   |
+| 1   | Base     | `setAssetPrice(fWETH, 1400e8)`: HF 1.5002 → 1.1668                                                                       | `0x733837bb085577400cc4c5f1fa618a9441a3ae961a3b52056fd8af229ef34b4e` | 62064940 | 13:37:36   |
+| 2   | Base     | `observe(policy)` emits `RiskObserved`                                                                                   | `0x70e07bd494b6ca28d382f814f0ab8a2a8a731d63c60d7518cbdb0f2d89892e32` | 62064952 | 13:37:39   |
+| 3   | Lasna    | `react` → `CallbackRequested` kind 1 → Base router                                                                       | `0x1a85c0897695adf70f57aa7d777dde0fa6098a684bf7f067c58508c183559c5e` | 8959348  | 13:37:38   |
+| 4   | Base     | `router.onRiskSignal` → `SolverRescueExecutor`: solver liquidity repays 1,412.481896 fUSDC; emits `SolverRescueExecuted` | `0xc2504c271b9e9d3b464930ab29f9ddd29de6b2026dfc592f32d3192ade7e3a59` | 62064960 | 13:37:40   |
+| 5   | Lasna    | `react` → `CallbackRequested` kind 2 → Unichain escrow                                                                   | `0xb4fcda3a7bb14a3cbd782beada931d29093e16dd7874c804f9a17c0fb685bee8` | 8959349  | 13:37:40   |
+| 6   | Unichain | `escrow.settleRescue` → vault pays the solver 1,419.544305 frUSDC; emits `ReimbursementCompleted`                        | `0xdb76ce6e060a787b486b2ea1867c491cb8ef8fdec7ef2324802a8a09da3de82e` | 68482434 | 13:37:42   |
+| 7   | Lasna    | `react` → `CallbackRequested` kind 3 → Base router                                                                       | `0x8d60c90875748160cf0f6545c4214ab2c1da45a20b35d6db47186bbe0e36630a` | 8959351  | 13:37:42   |
+| 8   | Base     | `router.onSettlementAck` → ledger `ReimbursementComplete`                                                                | `0x72c470814dc02a0a90e5fa632adc43535fa9d2359cf51f8bc9441e63393038fc` | 62064976 | 13:37:44   |
+
+Block times are each chain's own timestamps (IST). Clocks on different chains are not synchronized to the second, so
+Lasna tx 3 shows 13:37:38 although it reacts to Base tx 2. Base observe → Base ack: 5 s of Base block time.
+
+Results (reads in `evidence/deployments/live-solver-loop/loop-reads.txt`), rescueId
+`0x2383686a9ed8ba1a491116f69279f3d50189d1d3cf828cb98a8650ab9d6aa2e9`:
+
+- Base: debt 6,358.671202 → 4,946.189306 fUSDC (−1,412.481896, exactly the reimbursed principal); HF 1.1668 → 1.5000.
+- Unichain: solver frUSDC 0 → 1,419.544305 (principal + 0.5% fee 7.062409); escrow claim state `Reimbursed`, 1 attempt;
+  borrower budget repay reserve 10,000 → 8,587.518104 and fee reserve 200 → 192.937591 frUSDC.
+- Base: `RescueSettlementLedger.stateOf(rescueId)` = 7 (`ReimbursementComplete`).
+- Lasna: 4 events accepted, 0 ignored, 4 callbacks requested in total (flash loop + these 3); core debt 0.
+- Callbacks 4, 6 and 8 were sent by the Reactive relayer `0xf7e866d7…1ddb` through the official callback proxies.
+- Callback costs: Base router 9,913,186,800,000 wei (2 callbacks), Unichain escrow 724,975,350,000 wei, Lasna core
+  0.0533038 REACT (3 reacts).
+- The whole sequence (setup scripts, crash, all three callbacks via impersonated proxies) was first dry-run on anvil
+  forks of Base Sepolia and Unichain Sepolia with identical amounts.
+
+Setup (all status 1; full hashes in the `step*-run-latest.json` broadcast records in `evidence/deployments/live-solver-loop/`):
+
+| Step                                                                                        | Txs                                                                                           | Fees                  |
+| ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------- |
+| Base, deployer: 0.0015 ETH to solver, mint 20,000 fUSDC to solver, `registerPolicy` v2      | `0x1ea6ab22…1aba`, `0x671e644f…a8af`, `0x6ef2af6d…4b9b`                                       | 1,327,914,000,521 wei |
+| Unichain, deployer: 0.001 ETH to solver, mint + deposit 10,200 frUSDC, allocate budget      | `0x675ace62…2a97`, `0x00ee70af…f781`, `0x42160c26…d07e`, `0xc42f1594…0886`, `0xb788a054…0d11` | 188,752,878,233 wei   |
+| Base, solver: approvals, `register` (100 fUSDC bond), deposit 15,000, commit 8,000 @ 50 bps | `0xe9e1f87f…0c72`, `0x15570b69…d766`, `0x1ebb1bf2…cb55`, `0xd2932de9…ad77`, `0x24b9e46d…6d0a` | 3,989,670,000,514 wei |
+
+Commitment id `0xdff385cfff867ea209258f1e2da2fefa770e4ccdae30c905543ec891ee967af5`.
 
 ## Live end-to-end rescue (flash path), 2026-11-22
 
@@ -137,11 +183,21 @@ Reads (`evidence/deployments/unichain-sepolia/reserve-reads.txt`): code present;
 `trustedExecutor(84532, SolverRescueExecutor)` = true; `vault.isSettler(escrow)` = true; frUSDC supported; release
 delay 3,600 s; escrow balance 0.002 ETH.
 
+## Source verification (keyless)
+
+All 23 contracts are verified on **Sourcify** (Base Sepolia 18, Unichain Sepolia 4, Lasna 1) as a `match`: creation
+and runtime bytecode identical, metadata hash different (a partial match, not `exact_match`). **Blockscout** (Base
+Sepolia, Unichain Sepolia) shows all 22 of its contracts as verified (partial), imported from Sourcify. Basescan and
+Uniscan need an API key and were not used. Per-address status: `evidence/verification/explorer-verification.txt`.
+
+## API deployment registry
+
+The same records live in `packages/chain-registry/src/deployments.ts` (`TESTNET_DEPLOYMENTS`). The API upserts them
+into `deployment_registry` (mode `testnet`, creation tx, block, deployer, `source_verified`) at startup and via
+`pnpm --filter @bastion-guardian/api db:seed-testnet`, so `/v1/deployments?chainId=84532|1301|5318007`, `/v1/chains`
+and `/health` (16 non-fixture contracts) serve them and the web app enables actions on those chains.
+
 ## Not yet verified live
 
-- **Solver path and the second cycle** (`SolverRescueExecuted` → Unichain `settleRescue` → `ReimbursementCompleted` →
-  Base `onSettlementAck`). The sources and destinations are configured and subscribed, but no solver rescue has run on
-  testnet: it needs a separate solver account (registration bond, committed fUSDC liquidity) and a funded frUSDC reserve
-  budget on Unichain. The full two-cycle loop is covered by the local simulation only.
 - The official Aave V3 adapter is deployed and wired but has not executed a live rescue (no Base Sepolia Aave position).
-- Block-explorer source verification has not been submitted.
+- Sourcify verification is a partial match, not an exact match.
