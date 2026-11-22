@@ -5,7 +5,7 @@ _Last updated: 2026-11-22 (IST)_ · Hackathon deadline: 2026-12-05 20:00 UTC (20
 | State                        | Meaning                                                                                                                   | Current                                                                                                                                               |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Implemented                  | code exists                                                                                                               | contracts (26 files), packages/tools, 8 services, API, web (26 pages + PWA), Expo mobile app, SDK, Section 27 docs                                    |
-| Locally tested               | Foundry / Vitest / Playwright on the dev box                                                                              | **yes**: 87 Foundry + 185 Vitest (0 skipped; real anvil + Postgres + Redis) + 10 Playwright                                                           |
+| Locally tested               | Foundry / Vitest / Playwright on the dev box                                                                              | **yes**: 90 Foundry + 187 Vitest (0 skipped; real anvil + Postgres + Redis) + 10 Playwright                                                           |
 | Local simulation E2E         | full two-cycle loop on a private anvil (chain 31337)                                                                      | **yes**: `contracts/script/local-e2e.sh`, all checks pass (not testnet evidence)                                                                      |
 | Fork-tested                  | local fork of a real testnet, nothing broadcast                                                                           | **yes**: 3 tests against official Aave V3 Base Sepolia @ block 61193053 (earlier run, see below)                                                      |
 | Testnet deployed             | real deployment with tx hashes                                                                                            | **yes**: Lasna core (configured, 3 subscriptions, funded), Base Sepolia + Unichain Sepolia stacks; all 23 contracts Sourcify-verified (partial match) |
@@ -34,21 +34,21 @@ _Last updated: 2026-11-22 (IST)_ · Hackathon deadline: 2026-12-05 20:00 UTC (20
   (ledger `ReimbursementComplete`), 5 s of Base block time from observe to ack. Contracts are Sourcify-verified and
   recorded in the API `deployment_registry`. Every address and hash: `docs/integrations/TESTNET-DEPLOYMENTS.md`.
 
-## Last verified commands (2026-11-22 IST, branch feat/product-surface)
+## Last verified commands (2026-11-22 ~14:20 IST, branch feat/product-surface)
 
 | Command                                                                                                | Result                                                                                        |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `cd contracts && forge fmt --check && forge test`                                                      | clean; 15 suites, **87 passed, 0 failed, 3 skipped** (fork tests need an RPC)                 |
+| `cd contracts && forge fmt --check && forge test` (with `BASE_SEPOLIA_RPC_URL`)                        | clean; 15 suites, **90 passed, 0 failed, 0 skipped** (incl. 3 Base Sepolia fork tests)        |
 | `pnpm format:check`                                                                                    | clean                                                                                         |
-| `REQUIRE_INTEGRATION_INFRA=true pnpm turbo run lint typecheck test build --force`                      | **95/95 tasks, 0 cached**; **185 Vitest tests passed, 0 skipped**; web + mobile builds pass   |
+| `REQUIRE_INTEGRATION_INFRA=true pnpm turbo run lint typecheck test build --force`                      | **95/95 tasks, 0 cached**; **187 Vitest tests passed, 0 skipped**; web + mobile builds pass   |
 | `pnpm --filter @bastion-guardian/api openapi:check` / `pnpm --filter @bastion-guardian/sdk docs:check` | up to date                                                                                    |
 | `cd apps/web && pnpm test:e2e`                                                                         | **10 Playwright tests passed** (all 26 pages render with real data, radar → position, PWA)    |
 | `bash contracts/script/local-e2e.sh`                                                                   | **ALL LOCAL SIMULATION CHECKS PASSED** (evidence `contracts/out-evidence/local/e2e-run.json`) |
-| GitHub Actions CI on `aebc5d7`                                                                         | success                                                                                       |
+| GitHub Actions CI                                                                                      | see PR #3 checks (green on every pushed commit so far)                                        |
 
-Vitest per package: risk-engine 19, simulator 29, db 10, service-kit 5, chain-registry 5, contracts 5, config 3, sdk 16,
+Vitest per package: risk-engine 19, simulator 29, db 10, service-kit 5, chain-registry 6, contracts 5, config 3, sdk 16,
 observability 1, ui 1, local-e2e 3, chain-indexer 4, risk-observer 4, guardian-health 3, solver-coordinator 11,
-solver-node 4, settlement-reconciler 2, notification-dispatcher 14, analytics-worker 2, api 21, web 14, mobile 9.
+solver-node 4, settlement-reconciler 2, notification-dispatcher 14, analytics-worker 2, api 22, web 14, mobile 9.
 
 Mobile: `expo export --platform android` produces the Hermes bundle (1,110 modules). The app has **not** been run on a
 device or emulator.
