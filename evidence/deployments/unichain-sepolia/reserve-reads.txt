@@ -1,0 +1,13 @@
+# Unichain Sepolia (1301) reads, taken 2026-11-22 13:13:38 IST via https://sepolia.unichain.org
+code 0x811111D0a5DaBBD16180Ba42d11992863EF17e33 bytes=2268
+code 0xa196d20cc969Df5A4c7df5034A84e240dA7Cb943 bytes=5244
+code 0x0d37C05cfcbdcfDEF31350b7373b97c9234ccaaC bytes=3860
+code 0x8818ADCcA7EFb0C9Aaba043025EB8a886E6Bd7eF bytes=2176
+(0x811111D0... on 1301 = BastionEmergencyControl; same CREATE address as Lasna core because deployer nonce 0)
+escrow.VAULT 0xa196d20cc969Df5A4c7df5034A84e240dA7Cb943
+escrow.trustedExecutor(84532,0x667C527856bF7BE3Af2034270240aAf5F232Ec1D) true
+escrow native balance wei 2000000000000000
+vault.isSettler(escrow) true
+vault.isSupportedToken(frUSDC) true
+vault.RELEASE_DELAY 3600
+frUSDC name "BASTION Fixture Reserve USD Coin" symbol "frUSDC" decimals 6

@@ -1,0 +1,29 @@
+# Explorer source verification, checked 2026-11-22 13:52:59 IST
+# Submitted with: forge verify-contract <addr> <path:Name> --chain <id> --verifier sourcify --watch (keyless).
+# Blockscout (keyless) reported every address as already verified: it imported the Sourcify result.
+# Basescan/Uniscan (Etherscan-family) need an API key: not submitted.
+# Sourcify 'match' = partial match: creation + runtime bytecode identical, metadata hash differs (not 'exact_match').
+
+84532 AaveV3LendingAdapter 0x811111d0a5dabbd16180ba42d11992863ef17e33 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 FixtureToken 0xa196d20cc969df5a4c7df5034a84e240da7cb943 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 FixtureToken 0x0d37c05cfcbdcfdef31350b7373b97c9234ccaac | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 FixtureOracle 0xb3f36cb93f8c2102a65cf34ec0783b4181715f7f | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 FixtureLendingMarket 0xb7f24a2f3b1705f8cd3d1cf561795d7a28ec91d5 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 FixtureSwapVenue 0x16d979309271bca365bd8c7f3aba5754d8b6be3a | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 AaveV3LendingAdapter 0x7816dbddf238711e60a08fa11b05f9a7e6ef6e06 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 BastionEmergencyControl 0xa1031f6ab2dd3ab0782faf324f200ddf3f6e8366 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 BastionPolicyRegistry 0x04bb6e0c86e4ab79b7761d0b4961b2ff612a8899 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 RescueSettlementLedger 0x36ad6cb90bbae8053c435fea829883199131ce9b | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 RescueReceiptRegistry 0xc3dd025c323b04e67eebf7385e403e83f407a377 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 SolverRegistry 0xdf5009d0fba4c252c6bb4c18d2a089a453d0b36a | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 SolverLiquidityVault 0x4c8812fa826c3c8dd64bd20a99fb226c8193d0e2 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 SolverQuoteManager 0x0f38194e9403f5210bfcf668c1816183efdcf774 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 SolverRescueExecutor 0x667c527856bf7be3af2034270240aaf5f232ec1d | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 FlashRescueExecutor 0x32ea881c8957a762547cf80f564b6a61f5704f7f | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 BastionRiskObserver 0xafc143c2e37b18ee0c015d24c952a919ea47e05d | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+84532 BastionCallbackRouter 0x981284cfc15fde09c4401874091871c8e24c0e8e | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+1301 BastionEmergencyControl 0x811111d0a5dabbd16180ba42d11992863ef17e33 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+1301 BastionProtectionVault 0xa196d20cc969df5a4c7df5034a84e240da7cb943 | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+1301 CrossChainReserveEscrow 0x0d37c05cfcbdcfdef31350b7373b97c9234ccaac | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+1301 FixtureToken 0x8818adcca7efb0c9aaba043025eb8a886e6bd7ef | sourcify: match creation=match runtime=match | blockscout: verified (partial)
+5318007 BastionReactiveCore 0x811111d0a5dabbd16180ba42d11992863ef17e33 | sourcify: match creation=match runtime=match | blockscout: n/a (no Blockscout for Lasna)

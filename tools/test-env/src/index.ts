@@ -1,6 +1,7 @@
 import {
   createTestDatabase,
   probePostgres,
+  recordDeployments,
   seedLocalSimulation,
   type TestDatabase,
 } from "@bastion-guardian/db";
@@ -29,6 +30,7 @@ export async function createTestEnv(adminUrl: string): Promise<TestEnv> {
       { address: stack.addresses.frUSDC, symbol: "frUSDC", decimals: 6 },
     ],
   });
+  await recordDeployments(t.db, 31337, stack.addresses, "local_simulation");
   const indexer = new ChainIndexer(t.db, stack.public, {
     chainId: 31337,
     contracts: localContracts(stack.addresses),

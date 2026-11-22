@@ -10,13 +10,19 @@ import { BastionReactiveCore } from "../src/reactive/BastionReactiveCore.sol";
 ///         destination callback contracts' Reactive debt via their `coverDebt()`).
 /// @dev forge script script/ConfigureReactiveCore.s.sol --rpc-url lasna --account <keystore> --broadcast
 ///      Required env: REACTIVE_CORE_ADDRESS, DEST_RISK_OBSERVER, DEST_SOLVER_EXECUTOR, DEST_CALLBACK_ROUTER, RESERVE_ESCROW.
+///      Optional: CORE_FUNDING_WEI (REACT sent to the core before subscribing).
 contract ConfigureReactiveCore is BastionDeployBase {
     function run() external {
         _requireAllowedChain(LASNA);
         _requireAuthorizedIfLive();
         BastionReactiveCore core = BastionReactiveCore(payable(vm.envAddress("REACTIVE_CORE_ADDRESS")));
         bool activate = vm.envOr("ACTIVATE_SUBSCRIPTIONS", false);
+        uint256 funding = vm.envOr("CORE_FUNDING_WEI", uint256(0));
         vm.startBroadcast();
+        if (funding > 0) {
+            (bool ok,) = payable(address(core)).call{ value: funding }("");
+            require(ok, "fund core");
+        }
         _configureCore(
             core,
             BASE_SEPOLIA,

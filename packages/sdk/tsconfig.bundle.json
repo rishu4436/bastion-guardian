@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@bastion-guardian/types": ["../types/src/index.ts"],
+      "@bastion-guardian/risk-engine": ["../risk-engine/src/index.ts"],
+      "@bastion-guardian/chain-registry": ["../chain-registry/src/index.ts"]
+    },
+    "rootDir": ".."
+  }
+}

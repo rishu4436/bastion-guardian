@@ -1,7 +1,8 @@
 # Verified external addresses
 
 Every address BASTION depends on, with its official source and how it was checked. **Verification date: 2026-11-20 (IST).**
-BASTION's own contracts are **not deployed to any network**; there are no BASTION addresses in this file on purpose.
+This file lists only external dependencies. BASTION's own deployments (currently only `BastionReactiveCore` on Lasna)
+are in `docs/integrations/TESTNET-DEPLOYMENTS.md`.
 
 Legend — _Doc_: copied from the official source listed. _On-chain_: additionally confirmed by a live read (`cast call`)
 whose raw output is in `evidence/integrations/aave-base-sepolia-reads.txt`.

@@ -1,0 +1,67 @@
+{
+  "note": "Reconstructed from on-chain receipts (cast receipt) on 2026-11-22; the forge broadcast record for this step was lost from the build box filesystem, so these receipts are the authoritative record.",
+  "chain": "live-rescue-loop",
+  "transactions": [
+    {
+      "label": "1 Base: FixtureOracle.setAssetPrice(fWETH,1800e8) crash",
+      "txHash": "0xbbd781263bdf1c14e91f99fe6991452944ab6cc6cd703132bf7cd24089da8fa2",
+      "block": 62056099,
+      "timeIST": "2026-11-22T13:08:08+05:30",
+      "status": 1,
+      "from_": "0xed64a84b841e8ffeffd5670cf627984332b3835f",
+      "to": "0xb3f36cb93f8c2102a65cf34ec0783b4181715f7f",
+      "contractAddress": null,
+      "gasUsed": 36254,
+      "effectiveGasPriceWei": 5000001,
+      "l1FeeWei": 92,
+      "feeWei": 181270036346,
+      "logs": 1
+    },
+    {
+      "label": "2 Base: BastionRiskObserver.observe(policy) emits RiskObserved",
+      "txHash": "0x7553faf26298771b75a8ba4c2734180e41f0bdedbf05b590989cb37c47f9369e",
+      "block": 62056110,
+      "timeIST": "2026-11-22T13:08:10+05:30",
+      "status": 1,
+      "from_": "0xed64a84b841e8ffeffd5670cf627984332b3835f",
+      "to": "0xafc143c2e37b18ee0c015d24c952a919ea47e05d",
+      "contractAddress": null,
+      "gasUsed": 142338,
+      "effectiveGasPriceWei": 6000000,
+      "l1FeeWei": 92,
+      "feeWei": 854028000092,
+      "logs": 1
+    },
+    {
+      "label": "3 Lasna: Reactive react() -> EventAccepted + CallbackRequested (Reactive Network sender)",
+      "txHash": "0xa523811610c00aec3dba3b8e7adeb331ded99f4f569382f656c24ab8c857c369",
+      "block": 8957674,
+      "timeIST": "2026-11-22T13:08:10+05:30",
+      "status": 1,
+      "from_": "0x038e06667e42782e571eab20432b9237f9bd6b82",
+      "to": "0x8888888888888888888888888888888888888888",
+      "contractAddress": null,
+      "gasUsed": 180335,
+      "effectiveGasPriceWei": 0,
+      "l1FeeWei": 0,
+      "feeWei": 0,
+      "logs": 2
+    },
+    {
+      "label": "4 Base: callback proxy -> router.onRiskSignal -> FlashRescueExecutor (Reactive relayer)",
+      "txHash": "0x24cef533fbb81eb3b4b0edb2906e8de7b3c557f87ad598ed8be37baf256d8f17",
+      "block": 62056116,
+      "timeIST": "2026-11-22T13:08:12+05:30",
+      "status": 1,
+      "from_": "0xf7e866d726658f6c3f14b8ee537fe268a4d91ddb",
+      "to": "0x476f44b11f5c942c58f4c8e3d0300e5710743585",
+      "contractAddress": null,
+      "gasUsed": 1280930,
+      "effectiveGasPriceWei": 6000000,
+      "l1FeeWei": 219,
+      "feeWei": 7685580000219,
+      "logs": 30
+    }
+  ],
+  "totalFeeWei": 8720878036657
+}

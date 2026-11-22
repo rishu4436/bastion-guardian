@@ -1,0 +1,23 @@
+# Live rescue loop, started 2026-11-22 13:07:58 IST (raw log below was captured with the box clock in UTC: 07:37:58 UTC = 13:07:58 IST)
+pre HF 1307692307692307692 [1.307e18]
+pre accountData 2000000000000 [2e12] 1300000000000 [1.3e12] 300000000000 [3e11] 8500 8000 1307692307692307692 [1.307e18] 
+pre Lasna eventsAccepted 0 callbacksRequested 0
+base block 62056097
+crash setAssetPrice(fWETH,1800e8) 0xbbd781263bdf1c14e91f99fe6991452944ab6cc6cd703132bf7cd24089da8fa2 62056099 36254 0x1
+HF after crash 1176923076923076923 [1.176e18]
+observe 0x7553faf26298771b75a8ba4c2734180e41f0bdedbf05b590989cb37c47f9369e 62056110 142338 0x1 logs 1
+observe sent 07:38:12 UTC
+callback tx 0x24cef533fbb81eb3b4b0edb2906e8de7b3c557f87ad598ed8be37baf256d8f17 block 62056116 status 0x1 gasUsed 1280930 from 0xf7e866d726658f6c3f14b8ee537fe268a4d91ddb to 0x476f44b11f5c942c58f4c8e3d0300e5710743585 logs 30 l2fee wei 7685580000000 l1fee 219
+post HF 1500170179041520442 [1.5e18]
+post accountData 1122245754773 [1.122e12] 635867120200 [6.358e11] 261929483618 [2.619e11] 8500 8000 1500170179041520442 [1.5e18] 
+ledger.stateOf(rescueId) 4
+base callback block time 1795333092 observe block time 1795333090
+router balance wei 989646170800000
+router proxy debt 0
+lasna core: eventsAccepted 1 callbacksRequested 1 debt 0 balance 978069900000000000
+# Base Sepolia post-loop reads, taken 2026-11-22 13:13:38 IST
+router balance wei 989646170800000 (funded 1e15; callback billed 10,353,829,200,000 wei)
+router proxy debts(router) 0
+ledger.stateOf(0x76a65445712866d6e28e6b5da122df1be4a218902b9f9787623f6189e045b7e5) 4 (4 = DestinationExecuted)
+borrower HF 1500170179041520442 [1.5e18]
+borrower accountData (collateralBase, debtBase, availableBorrowsBase, LT, LTV, HF) 1122245754773 [1.122e12] 635867120200 [6.358e11] 261929483618 [2.619e11] 8500 8000 1500170179041520442 [1.5e18] 

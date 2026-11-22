@@ -1,9 +1,12 @@
 import type { Address, SupportedChainId } from "@bastion-guardian/types";
+import { TESTNET_DEPLOYMENTS } from "./deployments.js";
+
+export * from "./deployments.js";
 
 /**
  * Every address below is copied from an official source recorded in docs/integrations/VERIFIED-ADDRESSES.md
- * (verified 2026-11-20). BASTION's own contracts are NOT deployed yet: their entries are `null` and must stay
- * `null` until a real deployment is recorded under evidence/deployments/.
+ * (verified 2026-11-20). BASTION's own testnet deployments live in ./deployments.ts and come only from real receipts
+ * recorded under evidence/deployments/.
  */
 export interface SourceRef {
   url: string;
@@ -159,11 +162,39 @@ export interface DeploymentRecord {
   block: number;
 }
 
+/** Every BASTION contract name, in deployment order. */
+export const BASTION_CONTRACT_NAMES: readonly BastionContractName[] = [
+  "BastionReactiveCore",
+  "BastionCallbackRouter",
+  "BastionPolicyRegistry",
+  "BastionProtectionVault",
+  "CrossChainReserveEscrow",
+  "SolverRescueExecutor",
+  "FlashRescueExecutor",
+  "SolverRegistry",
+  "SolverLiquidityVault",
+  "SolverQuoteManager",
+  "RescueSettlementLedger",
+  "RescueReceiptRegistry",
+  "BastionEmergencyControl",
+  "BastionRiskObserver",
+  "AaveV3LendingAdapter",
+];
+const BASTION_NAMES: ReadonlySet<string> = new Set<string>(BASTION_CONTRACT_NAMES);
+
 /**
- * BASTION deployments. Intentionally empty: nothing has been deployed to any network yet (Phase 3 requires owner
- * authorization). Populate only from evidence/deployments/*.json produced by the deployment scripts.
+ * BASTION testnet deployments (non-fixture contracts only), derived from `TESTNET_DEPLOYMENTS`, which is copied from
+ * real receipts under evidence/deployments/. Mainnet is intentionally absent.
  */
-export const BASTION_DEPLOYMENTS: Partial<Record<BastionContractName, DeploymentRecord[]>> = {};
+export const BASTION_DEPLOYMENTS: Partial<Record<BastionContractName, DeploymentRecord[]>> = (() => {
+  const out: Partial<Record<BastionContractName, DeploymentRecord[]>> = {};
+  for (const d of TESTNET_DEPLOYMENTS) {
+    if (d.fixture || !BASTION_NAMES.has(d.contract)) continue;
+    const name = d.contract as BastionContractName;
+    (out[name] ??= []).push({ chainId: d.chainId, address: d.address, txHash: d.txHash, block: d.block });
+  }
+  return out;
+})();
 
 export function getChain(id: number): ChainInfo {
   const c = (CHAINS as Record<number, ChainInfo | undefined>)[id];

@@ -2,7 +2,7 @@
   "name": "@bastion-guardian/sdk",
   "version": "0.1.0",
   "private": true,
-  "description": "BASTION Guardian developer SDK (typed policy drafting, EIP-712 hashing, readiness, simulation).",
+  "description": "BASTION Guardian developer SDK: typed API client, React hooks, Protect with BASTION embed, EIP-712 policy drafting.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,26 +11,60 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "docs"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src",
-    "test": "vitest run --passWithNoTests"
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "docs": "typedoc",
+    "docs:check": "typedoc && git diff --exit-code -- docs"
   },
   "dependencies": {
-    "@bastion-guardian/chain-registry": "workspace:*",
-    "@bastion-guardian/risk-engine": "workspace:*",
-    "@bastion-guardian/types": "workspace:*",
-    "viem": "2.40.3"
+    "viem": "2.40.3",
+    "zod": "4.1.12"
   },
   "devDependencies": {
+    "@bastion-guardian/api": "workspace:*",
+    "@bastion-guardian/chain-registry": "workspace:*",
+    "@bastion-guardian/config": "workspace:*",
+    "@bastion-guardian/db": "workspace:*",
+    "@bastion-guardian/guardian-health": "workspace:*",
+    "@bastion-guardian/risk-engine": "workspace:*",
+    "@bastion-guardian/risk-observer": "workspace:*",
+    "@bastion-guardian/types": "workspace:*",
+    "@bastion/local-e2e": "workspace:*",
+    "@bastion/test-env": "workspace:*",
+    "@testing-library/react": "16.3.3",
     "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "jsdom": "31.0.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tsup": "9.0.0",
+    "typedoc": "0.28.20",
+    "typedoc-plugin-markdown": "4.14.1",
     "typescript": "5.9.3",
     "vitest": "3.2.7"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   }
 }

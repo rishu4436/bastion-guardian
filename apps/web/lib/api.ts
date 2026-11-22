@@ -35,7 +35,12 @@ export async function api<T = unknown>(
   if (method !== "GET" && method !== "HEAD") {
     if (!csrfToken) {
       try {
-        const r = await fetch(`${apiUrl()}/v1/auth/csrf`, { credentials: "include" });
+        const r = await fetch(`${apiUrl()}/v1/auth/csrf`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "content-type": "application/json" },
+          body: "{}",
+        });
         if (r.ok) csrfToken = ((await r.json()) as { csrfToken: string }).csrfToken;
       } catch {
         /* surfaced by the request below */

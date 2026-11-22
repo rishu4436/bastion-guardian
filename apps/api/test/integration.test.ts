@@ -6,6 +6,8 @@ import { loadEnv } from "@bastion-guardian/config";
 import { SolverCoordinator, QUOTE_TYPES, quoteDomain } from "@bastion-guardian/solver-coordinator";
 import type { NotificationProvider, RenderedMessage } from "@bastion-guardian/notification-dispatcher";
 import { createTestEnv, probePostgres, type TestEnv } from "@bastion/test-env";
+import { recordTestnetDeployments, deploymentRegistry } from "@bastion-guardian/db";
+import { TESTNET_DEPLOYER, TESTNET_DEPLOYMENTS } from "@bastion-guardian/chain-registry";
 import { buildApp } from "../src/app.js";
 
 const pgUrl = await probePostgres();
@@ -382,5 +384,72 @@ describe.skipIf(!pgUrl)("api v1 (LOCAL SIMULATION: anvil + Postgres)", () => {
     ])
       expect(Object.keys(spec.paths)).toContain(p);
     expect((await app.inject({ method: "GET", url: "/docs" })).statusCode).toBeLessThan(400);
+  });
+  it("Proof of Protection: JSON with a reproducible content hash, and a PDF rendering", async () => {
+    const list = (await app.inject({ method: "GET", url: "/v1/rescues?chainId=31337" })).json();
+    const withExec = list.items.find((i: { executions: { success: boolean }[] }) =>
+      i.executions.some((e) => e.success),
+    );
+    expect(withExec).toBeTruthy();
+    const res = await app.inject({ method: "GET", url: `/v1/rescues/${withExec.rescueId}/proof` });
+    expect(res.statusCode).toBe(200);
+    const proof = res.json();
+    expect(proof.schema).toBe("bastion.proof-of-protection/v1");
+    expect(proof.environment).toBe("LOCAL_SIMULATION");
+    expect(proof.outcome.rescued).toBe(true);
+    expect(proof.facts.debtToken.symbol).toBe("fUSDC");
+    expect(proof.facts.policy.owner).toMatch(/^0x[0-9a-f]{40}$/);
+    const { canonicalJson } = await import("../src/routes/proof.js");
+    const { createHash } = await import("node:crypto");
+    expect(createHash("sha256").update(canonicalJson(proof.facts)).digest("hex")).toBe(
+      proof.verification.contentHash,
+    );
+    // Deterministic: a second fetch hashes the same facts even though generatedAt changes.
+    const again = (await app.inject({ method: "GET", url: `/v1/rescues/${withExec.rescueId}/proof` })).json();
+    expect(again.verification.contentHash).toBe(proof.verification.contentHash);
+    const pdf = await app.inject({ method: "GET", url: `/v1/rescues/${withExec.rescueId}/proof.pdf` });
+    expect(pdf.statusCode).toBe(200);
+    expect(pdf.headers["content-type"]).toBe("application/pdf");
+    expect(pdf.rawPayload.subarray(0, 5).toString()).toBe("%PDF-");
+    expect(pdf.rawPayload.length).toBeGreaterThan(1500);
+    expect(
+      (await app.inject({ method: "GET", url: `/v1/rescues/0x${"cd".repeat(32)}/proof` })).statusCode,
+    ).toBe(404);
+  });
+  it("serves recorded deployments and reads the policy nonce from chain", async () => {
+    const d = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=31337" })).json();
+    expect(d.mode).toBe("local_simulation");
+    expect(d.contracts.policyRegistry).toBe(env.stack.addresses.policyRegistry.toLowerCase());
+    const n = await app.inject({
+      method: "GET",
+      url: `/v1/policy-registry/nonce?chainId=31337&owner=${env.stack.addresses.borrowerA}`,
+    });
+    expect(n.statusCode).toBe(200);
+    expect(BigInt(n.json().nonce)).toBeGreaterThanOrEqual(1n); // borrowerA registered policyA in the deploy script
+    const other = await app.inject({
+      method: "GET",
+      url: "/v1/policy-registry/nonce?chainId=84532&owner=0x000000000000000000000000000000000000dEaD",
+    });
+    expect(other.json().error).toBe("CHAIN_UNAVAILABLE");
+  });
+  it("serves the recorded testnet deployments (mode testnet, with creation tx) idempotently", async () => {
+    expect(await recordTestnetDeployments(env.db, TESTNET_DEPLOYMENTS, TESTNET_DEPLOYER)).toBe(
+      TESTNET_DEPLOYMENTS.length,
+    );
+    await recordTestnetDeployments(env.db, TESTNET_DEPLOYMENTS, TESTNET_DEPLOYER); // re-run: no duplicates
+    const base = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=84532" })).json();
+    expect(base.mode).toBe("testnet");
+    expect(base.contracts.callbackRouter).toBe("0x981284cfc15fde09c4401874091871c8e24c0e8e");
+    expect(base.contracts.policyRegistry).toBe("0x04bb6e0c86e4ab79b7761d0b4961b2ff612a8899");
+    const uni = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=1301" })).json();
+    expect(uni.contracts.reserveEscrow).toBe("0x0d37c05cfcbdcfdef31350b7373b97c9234ccaac");
+    const lasna = (await app.inject({ method: "GET", url: "/v1/deployments?chainId=5318007" })).json();
+    expect(lasna.contracts.reactiveCore).toBe("0x811111d0a5dabbd16180ba42d11992863ef17e33");
+    const rows = await env.db.select().from(deploymentRegistry);
+    const testnet = rows.filter((r) => r.mode === "testnet");
+    expect(testnet).toHaveLength(TESTNET_DEPLOYMENTS.length);
+    expect(testnet.every((r) => /^0x[0-9a-f]{64}$/.test(r.txHash ?? "") && (r.blockNumber ?? 0n) > 0n)).toBe(
+      true,
+    );
   });
 });
