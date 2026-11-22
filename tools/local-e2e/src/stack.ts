@@ -104,9 +104,20 @@ function artifactFingerprint(): string {
 
 interface Cache {
   fingerprint: string;
+  /** Wall-clock ms when the deployment was mined. The cached chain clock is frozen at that moment. */
+  createdAt?: number;
   state: Hex;
   addresses: unknown;
 }
+
+/**
+ * A loaded anvil state keeps the block timestamps it was dumped with, so an old cache runs the chain hours or days
+ * behind wall time (breaking time-windowed queries) and a jump to "now" would expire the deploy script's
+ * `block.timestamp + 1 days` commitments. Caches older than this are rebuilt.
+ */
+const CACHE_MAX_AGE_MS = 6 * 3600_000;
+const usable = (c: Cache, fp: string) =>
+  c.fingerprint === fp && typeof c.createdAt === "number" && Date.now() - c.createdAt < CACHE_MAX_AGE_MS;
 
 async function buildCache(fingerprint: string): Promise<Cache> {
   const port = await freePort();
@@ -124,7 +135,7 @@ async function buildCache(fingerprint: string): Promise<Cache> {
     );
     const addresses = JSON.parse(readFileSync(join(CONTRACTS, "out-evidence/local/addresses.json"), "utf8"));
     const state = (await rpcCall(rpc, "anvil_dumpState", [])) as Hex;
-    const cache = { fingerprint, state, addresses };
+    const cache = { fingerprint, createdAt: Date.now(), state, addresses };
     mkdirSync(dirname(CACHE), { recursive: true });
     writeFileSync(CACHE, JSON.stringify(cache));
     return cache;
@@ -181,13 +192,13 @@ export async function startLocalStack(): Promise<LocalStack> {
   let cache: Cache | null = null;
   if (existsSync(CACHE)) {
     const c = JSON.parse(readFileSync(CACHE, "utf8")) as Cache;
-    if (c.fingerprint === fp) cache = c;
+    if (usable(c, fp)) cache = c;
   }
   cache ??= await withLock(async () => {
     // Another test process may have built it while we waited.
     if (existsSync(CACHE)) {
       const c = JSON.parse(readFileSync(CACHE, "utf8")) as Cache;
-      if (c.fingerprint === fp) return c;
+      if (usable(c, fp)) return c;
     }
     return buildCache(fp);
   });
@@ -195,6 +206,11 @@ export async function startLocalStack(): Promise<LocalStack> {
   const anvil = await startAnvil(port);
   const rpcUrl = `http://127.0.0.1:${port}`;
   await rpcCall(rpcUrl, "anvil_loadState", [cache.state]);
+  // Re-align the chain clock with wall time (the cache is < CACHE_MAX_AGE_MS old, so deploy-relative expiries hold).
+  const latest = (await rpcCall(rpcUrl, "eth_getBlockByNumber", ["latest", false])) as { timestamp: Hex };
+  const now = Math.max(Math.floor(Date.now() / 1000), Number(BigInt(latest.timestamp)) + 1);
+  await rpcCall(rpcUrl, "evm_setNextBlockTimestamp", [now]);
+  await rpcCall(rpcUrl, "evm_mine", []);
   const addresses = parseLocalDeployment(cache.addresses);
   const pub = createPublicClient({
     chain: foundry,
