@@ -1,0 +1,13 @@
+# Lasna (5318007) BastionReactiveCore reads after configuration + live loop, taken 2026-11-22 13:13:38 IST via https://lasna-rpc.rnk.dev/
+sourceCount 3
+source[0] (chainId, emitter, topic0, kind, opCode, dataLen, active) = (84532 [8.453e4], 0xAFC143C2e37b18Ee0C015d24C952a919EA47e05D, 42790130759897236611940849325722248736130833603123102782949311217477992619056 [4.279e76], 1, 4, 96, true)
+source[1] (chainId, emitter, topic0, kind, opCode, dataLen, active) = (84532 [8.453e4], 0x667C527856bF7BE3Af2034270240aAf5F232Ec1D, 25113667205359350074803405432725818987164519155541111563138822858340284707979 [2.511e76], 2, 4, 192, true)
+source[2] (chainId, emitter, topic0, kind, opCode, dataLen, active) = (1301, 0x0d37C05cfcbdcfDEF31350b7373b97c9234ccaaC, 112053266353920151452235085070268416422570324513258340570735249415411825231504 [1.12e77], 3, 4, 64, true)
+riskDestination (chainId, recipient, gasLimit) = 84532 [8.453e4] 0x981284cFc15fDe09C4401874091871c8E24C0e8e 2000000 [2e6] 
+settlementDestination (chainId, recipient, gasLimit) = 1301 0x0d37C05cfcbdcfDEF31350b7373b97c9234ccaaC 1000000 [1e6] 
+ackDestination (chainId, recipient, gasLimit) = 84532 [8.453e4] 0x981284cFc15fDe09C4401874091871c8E24C0e8e 500000 [5e5] 
+policyMirror(0xb764...216b) (active, version, cooldown, lastTriggerAt) = true 1 0 1795333090 [1.795e9] 
+eventsAccepted 1 eventsIgnored 0 callbacksRequested 1
+outstandingDebt 0 paused false
+core balance wei 978069900000000000 (funded 1e18; 21,930,100,000,000,000 wei consumed by the live loop react + callback)
+Subscriptions: each setSourceActive tx emitted a subscribe log from the Reactive system contract 0x8888888888888888888888888888888888888888 (see transactions.json).

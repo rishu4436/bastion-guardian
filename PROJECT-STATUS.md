@@ -2,15 +2,15 @@
 
 _Last updated: 2026-11-22 (IST)_ · Hackathon deadline: 2026-12-05 20:00 UTC (2026-12-06 01:30 IST)
 
-| State                        | Meaning                                              | Current                                                                                                                         |
-| ---------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Implemented                  | code exists                                          | contracts (26 files), packages/tools, 8 services, API, web (26 pages + PWA), Expo mobile app, SDK, Section 27 docs              |
-| Locally tested               | Foundry / Vitest / Playwright on the dev box         | **yes**: 87 Foundry + 185 Vitest (0 skipped; real anvil + Postgres + Redis) + 10 Playwright                                     |
-| Local simulation E2E         | full two-cycle loop on a private anvil (chain 31337) | **yes**: `contracts/script/local-e2e.sh`, all checks pass (not testnet evidence)                                                |
-| Fork-tested                  | local fork of a real testnet, nothing broadcast      | **yes**: 3 tests against official Aave V3 Base Sepolia @ block 61193053 (earlier run, see below)                                |
-| Testnet deployed             | real deployment with tx hashes                       | **partial**: `BastionReactiveCore` on Lasna (step 1, unconfigured). Base Sepolia / Unichain Sepolia: **no** (deployer unfunded) |
-| Live E2E verified            | full loop on live testnets                           | **no**                                                                                                                          |
-| Production-security-reviewed | independent audit                                    | **no**                                                                                                                          |
+| State                        | Meaning                                                                                                                    | Current                                                                                                                                    |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Implemented                  | code exists                                                                                                                | contracts (26 files), packages/tools, 8 services, API, web (26 pages + PWA), Expo mobile app, SDK, Section 27 docs                         |
+| Locally tested               | Foundry / Vitest / Playwright on the dev box                                                                               | **yes**: 87 Foundry + 185 Vitest (0 skipped; real anvil + Postgres + Redis) + 10 Playwright                                                |
+| Local simulation E2E         | full two-cycle loop on a private anvil (chain 31337)                                                                       | **yes**: `contracts/script/local-e2e.sh`, all checks pass (not testnet evidence)                                                           |
+| Fork-tested                  | local fork of a real testnet, nothing broadcast                                                                            | **yes**: 3 tests against official Aave V3 Base Sepolia @ block 61193053 (earlier run, see below)                                           |
+| Testnet deployed             | real deployment with tx hashes                                                                                             | **yes**: Lasna core (configured, 3 subscriptions, funded), Base Sepolia destination stack + FIXTURE market, Unichain Sepolia reserve stack |
+| Live E2E verified            | **flash path yes** (2026-11-22 13:08 IST, Base → Lasna → Base, HF 1.18 → 1.50); solver path + settlement cycle **not yet** |
+| Production-security-reviewed | independent audit                                                                                                          | **no**                                                                                                                                     |
 
 ## Phase progress
 
@@ -25,9 +25,12 @@ _Last updated: 2026-11-22 (IST)_ · Hackathon deadline: 2026-12-05 20:00 UTC (20
 - **Product surface: done locally (PR #3).** 26 web pages (Section 17) on real API/wallet data paths, PWA (manifest,
   service worker, offline page, Web Push), Expo SDK 58 mobile companion (read-only; signing via web deep links), Section 27
   docs (`docs/README.md` index).
-- **Phase 3 (live Reactive integration): started.** Step 1 done: `BastionReactiveCore` deployed on Lasna at
-  `0x811111D0a5DaBBD16180Ba42d11992863EF17e33` (tx `0x25752e84…3128b7`, block 8944427, 2026-11-22 09:14 IST); see
-  `docs/integrations/TESTNET-DEPLOYMENTS.md`. Steps 2–5 are blocked on Base/Unichain Sepolia funding.
+- **Phase 3 (live Reactive integration): flash loop verified live.** Lasna core deployed (09:14 IST), Base Sepolia
+  destination stack (12:51 IST, 43 txs), Unichain Sepolia reserve stack (12:59 IST, 8 txs), core configured with 3
+  active subscriptions and 1 REACT (13:02 IST). Live rescue at 13:08 IST: Base `observe` tx `0x7553faf2…f9369e` →
+  Lasna `react` tx `0xa5238116…57c369` → Base callback tx `0x24cef533…6d8f17` (flash rescue, debt 13,000 → 6,358.67
+  fUSDC, HF 1.1769 → 1.5002). Every address and hash: `docs/integrations/TESTNET-DEPLOYMENTS.md`. Remaining: the solver
+  path and the second (Unichain settlement) cycle live.
 
 ## Last verified commands (2026-11-22 IST, branch feat/product-surface)
 
@@ -54,16 +57,16 @@ BASE_SEPOLIA_FORK_BLOCK=61193053 forge test` (3 fork tests passed), `slither .` 
 
 ## Blockers (external; need the owner)
 
-1. **Base Sepolia and Unichain Sepolia ETH** for the deployer `0xED64A84B841E8fFeFFd5670cf627984332b3835F` (both 0 on
-   2026-11-22). Blocks Phase 3 steps 2–5 and every live end-to-end check.
-2. **Lasna REACT** is available (10.2858552 REACT after step 1) for configuration, subscriptions and callback debt.
+1. **Testnet funds are in place** (deployer `0xED64A84B841E8fFeFFd5670cf627984332b3835F`, 2026-11-22 13:13 IST):
+   Base Sepolia 0.00886 ETH, Unichain Sepolia 0.07400 ETH, Lasna 9.1952 REACT (core holds 0.978 REACT).
+2. **Solver path live run** needs a second (solver) testnet account; the deployer cannot be its own solver cleanly.
 3. **Notification provider credentials**: VAPID keys, Telegram bot token, Resend-compatible email key, Twilio account.
    Without them each channel reports "not configured" and deliveries dead-letter with `PROVIDER_NOT_CONFIGURED`.
 
 ## Open technical items
 
-- Verify on Lasna: Omni single-instance state for owner config plus `react()` delivery (needs origin contracts).
-  Cancun-target bytecode deploys and executes on Lasna (step 1).
+- Live solver rescue + Unichain reimbursement + Base settlement ack (configured and subscribed, not yet exercised).
+  Lasna `react()` delivery and owner config visible to the ReactVM are verified by the live flash loop.
 - Uniswap venue adapter (Base Sepolia v3 WETH/USDC liquidity ≈ 674 USDC, so demos use the labeled fixture venue).
 - Per-asset analytics (rescue rows do not yet store the debt token) (Redis-backed shared rate limiting landed in efbf4eb, R-10).
 - Mobile: background push (Expo/EAS credentials) and an on-device run. Docs: a rendered docs site (`apps/docs`); the
