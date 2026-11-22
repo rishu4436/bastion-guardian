@@ -5,6 +5,12 @@ import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig } from "@/lib/wagmi";
 import { SessionProvider } from "@/lib/session";
+import { useServiceWorker } from "@/lib/pwa";
+
+function ServiceWorker() {
+  useServiceWorker();
+  return null;
+}
 
 export function Providers({ children }: { children: ReactNode }) {
   const [qc] = useState(
@@ -16,7 +22,10 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={qc}>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <ServiceWorker />
+          {children}
+        </SessionProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

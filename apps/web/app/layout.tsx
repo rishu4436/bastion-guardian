@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -7,6 +7,16 @@ import { EnvironmentBanner, Nav } from "@/components/nav";
 export const metadata: Metadata = {
   title: { default: "BASTION Guardian", template: "%s · BASTION Guardian" },
   description: "Autonomous, non-custodial cross-chain liquidation protection powered by Reactive Network.",
+  applicationName: "BASTION Guardian",
+  appleWebApp: { capable: true, title: "BASTION", statusBarStyle: "black-translucent" },
+  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0b1220",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 // Runtime configuration (API origin) is injected per request so one build serves any environment.

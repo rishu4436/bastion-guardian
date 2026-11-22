@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@bastion-guardian/chain-registry": "workspace:*",
+    "@bastion-guardian/contracts": "workspace:*",
     "@bastion-guardian/risk-engine": "workspace:*",
+    "@bastion-guardian/sdk": "workspace:*",
     "@bastion-guardian/types": "workspace:*",
     "@bastion-guardian/ui": "workspace:*",
     "@tanstack/react-query": "5.108.1",

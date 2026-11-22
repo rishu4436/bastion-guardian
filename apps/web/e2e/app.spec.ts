@@ -87,3 +87,92 @@ test("admin sees the operations console; SSE feed updates live", async ({ page }
   await expect(page.getByRole("heading", { name: "Operations" })).toBeVisible();
   await expect(page.getByText("auth.sign_in").first()).toBeVisible();
 });
+
+const API = "http://127.0.0.1:4100";
+const apiJson = (p: string) => fetch(`${API}${p}`).then((r) => r.json() as Promise<Record<string, unknown>>);
+
+test("every one of the 26 pages renders with real data and no client error", async ({ page }) => {
+  const { policyA } = await harness("/ready");
+  const rescues = (await apiJson("/v1/rescues?chainId=31337&limit=5")) as { items: { rescueId: string }[] };
+  const solvers = (await apiJson("/v1/solvers?chainId=31337")) as { items: { solver: string }[] };
+  const positions = (await apiJson("/v1/positions?chainId=31337&limit=5")) as { items: { id: string }[] };
+  const rescueId = rescues.items[0]?.rescueId;
+  const solver = solvers.items[0]?.solver;
+  const positionId = positions.items[0]?.id;
+  expect(rescueId, "the e2e stack indexes a real local rescue").toBeTruthy();
+  expect(solver, "the e2e stack has a registered local solver").toBeTruthy();
+  expect(positionId, "the risk observer recorded a position").toBeTruthy();
+  const routes = [
+    "/",
+    "/dashboard",
+    "/policies",
+    "/policies/new",
+    `/policies/31337/${String(policyA).toLowerCase()}`,
+    "/guardian",
+    "/emergency",
+    "/radar",
+    `/positions/${positionId}`,
+    "/activity",
+    `/rescues/${rescueId}`,
+    `/proof/${rescueId}`,
+    "/analytics",
+    "/simulator",
+    "/status",
+    "/solvers",
+    `/solvers/31337/${solver}`,
+    "/solvers/operator",
+    "/settlements",
+    "/reserve",
+    "/settings",
+    "/settings/notifications",
+    "/developers",
+    "/install",
+    "/offline",
+    "/operations",
+  ];
+  expect(new Set(routes).size).toBe(26);
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(`${page.url()}: ${e.message}`));
+  for (const r of routes) {
+    const res = await page.goto(r);
+    expect(res?.status(), r).toBeLessThan(400);
+    await expect(page.getByRole("heading", { level: 1 }).first(), r).toBeVisible();
+    await expect(page.getByText("Application error"), r).toHaveCount(0);
+  }
+  expect(errors).toEqual([]);
+});
+
+test("radar → position detail shows the indexed health factor and its on-chain history", async ({ page }) => {
+  await page.goto("/radar");
+  const first = page.getByTestId("radar-hf").first();
+  await expect(first).toBeVisible();
+  const hfText = (await first.textContent())!.trim();
+  await first.click();
+  await expect(page.getByRole("heading", { name: "Position" })).toBeVisible();
+  await expect(page.getByTestId("position-hf")).toHaveText(hfText);
+  await expect(page.getByRole("heading", { name: "Health-factor history" })).toBeVisible();
+  await expect(page.getByText("On-chain").or(page.getByText("Local simulation")).first()).toBeVisible();
+});
+
+test("site menu reaches every section", async ({ page }) => {
+  await page.goto("/dashboard");
+  await page.getByText("Menu", { exact: true }).click();
+  await page.getByRole("link", { name: "Emergency Action Center" }).click();
+  await expect(page).toHaveURL(/\/emergency$/);
+  await page.getByText("Menu", { exact: true }).click();
+  await page.getByRole("link", { name: "Settlements" }).click();
+  await expect(page).toHaveURL(/\/settlements$/);
+});
+
+test("PWA: manifest, icons and service worker are served and the worker activates", async ({
+  page,
+  request,
+}) => {
+  const m = await (await request.get("/manifest.webmanifest")).json();
+  expect(m).toMatchObject({ name: "BASTION Guardian", display: "standalone" });
+  for (const i of m.icons as { src: string }[]) expect((await request.get(i.src)).status()).toBe(200);
+  expect((await request.get("/sw.js")).status()).toBe(200);
+  await page.goto("/dashboard");
+  const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
+  expect(scope).toBe("http://127.0.0.1:3100/");
+});

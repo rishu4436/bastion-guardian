@@ -9,12 +9,84 @@ import { CHAIN_NAMES, short } from "@/lib/format";
 
 const LINKS = [
   ["/dashboard", "Dashboard"],
+  ["/radar", "Radar"],
+  ["/emergency", "Emergency"],
   ["/activity", "Activity"],
   ["/solvers", "Solvers"],
-  ["/simulator", "Simulator"],
-  ["/analytics", "Analytics"],
   ["/status", "Status"],
 ] as const;
+
+/** Every page in the app, grouped. Rendered as a keyboard-accessible disclosure menu on all screen sizes. */
+export const SITE_MAP: { group: string; links: [string, string][] }[] = [
+  {
+    group: "Protect",
+    links: [
+      ["/dashboard", "Dashboard"],
+      ["/policies", "Policies"],
+      ["/policies/new", "New policy"],
+      ["/guardian", "Guardian Mode"],
+      ["/emergency", "Emergency Action Center"],
+    ],
+  },
+  {
+    group: "Observe",
+    links: [
+      ["/radar", "Liquidation Radar"],
+      ["/activity", "Activity"],
+      ["/analytics", "Analytics"],
+      ["/simulator", "Simulator"],
+      ["/status", "System status"],
+    ],
+  },
+  {
+    group: "Solvers & settlement",
+    links: [
+      ["/solvers", "Solver network"],
+      ["/solvers/operator", "Operator console"],
+      ["/settlements", "Settlements"],
+      ["/reserve", "Reserve"],
+    ],
+  },
+  {
+    group: "Account & developers",
+    links: [
+      ["/settings", "Settings"],
+      ["/settings/notifications", "Notifications"],
+      ["/developers", "Developers"],
+      ["/install", "Install app"],
+    ],
+  },
+];
+
+function SiteMenu() {
+  return (
+    <details className="group relative">
+      <summary className="cursor-pointer list-none rounded-md px-2.5 py-1.5 text-sm text-muted hover:text-text [&::-webkit-details-marker]:hidden">
+        Menu
+      </summary>
+      <div className="absolute right-0 z-30 mt-2 grid w-[min(92vw,40rem)] grid-cols-2 gap-4 rounded-xl border border-border bg-surface p-4 shadow-lg">
+        {SITE_MAP.map((g) => (
+          <div key={g.group}>
+            <div className="mb-1 text-xs uppercase tracking-wide text-muted">{g.group}</div>
+            <ul>
+              {g.links.map(([href, label]) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="block rounded px-1.5 py-1 text-sm hover:bg-raised"
+                    onClick={(e) => e.currentTarget.closest("details")?.removeAttribute("open")}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -124,6 +196,7 @@ export function Nav() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-3">
+          <SiteMenu />
           <ThemeToggle />
           <WalletButton />
         </div>
